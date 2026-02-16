@@ -191,9 +191,11 @@ function App() {
           position: relative; z-index: 3;
           text-align: center;
           color: #fff;
+          width: 100%;
+          padding: 0 24px;
         }
         .intro-name {
-          font-size: clamp(40px, 6vw, 72px);
+          font-size: clamp(32px, 8vw, 72px);
           font-weight: 600;
           letter-spacing: 0.06em;
           text-transform: uppercase;
