@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import profileImg from "./assets/profile.png";
 
 function App() {
   const [visibleSections, setVisibleSections] = useState(new Set());
@@ -607,7 +608,7 @@ function App() {
       >
         <div className={`about-inner fade-in ${v("about") ? "show" : ""}`}>
           <div className="about-image-wrap">
-            <img src="/src/assets/profile.png" alt="Gursewak Singh" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={profileImg} alt="Gursewak Singh" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div className="about-content">
             <h2>About Me</h2>
