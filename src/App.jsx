@@ -5,6 +5,7 @@ function App() {
   const [visibleSections, setVisibleSections] = useState(new Set());
   const [activeExp, setActiveExp] = useState(null);
   const [scrollY, setScrollY] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const h = () => setScrollY(window.scrollY);
@@ -492,9 +493,132 @@ function App() {
           font-family: 'IBM Plex Mono', monospace;
           font-size: 12px; color: #ccc;
         }
+
+        /* === HAMBURGER MENU === */
+        .hamburger {
+          display: none;
+          flex-direction: column;
+          justify-content: center;
+          gap: 5px;
+          width: 28px;
+          height: 28px;
+          cursor: pointer;
+          background: none;
+          border: none;
+          padding: 0;
+          z-index: 101;
+        }
+        .hamburger span {
+          display: block;
+          width: 100%;
+          height: 2px;
+          background: #000;
+          transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .hamburger.open span:nth-child(1) {
+          transform: translateY(7px) rotate(45deg);
+          background: #fff;
+        }
+        .hamburger.open span:nth-child(2) {
+          opacity: 0;
+        }
+        .hamburger.open span:nth-child(3) {
+          transform: translateY(-7px) rotate(-45deg);
+          background: #fff;
+        }
+
+        .menu-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 100;
+          background: #000;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                      visibility 0.35s;
+        }
+        .menu-overlay.open {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+        }
+        .menu-overlay-link {
+          font-size: 28px;
+          font-weight: 500;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #fff;
+          text-decoration: none;
+          padding: 20px 0;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.4s ease, transform 0.4s ease, color 0.2s ease;
+        }
+        .menu-overlay.open .menu-overlay-link {
+          opacity: 1;
+          transform: none;
+        }
+        .menu-overlay.open .menu-overlay-link:nth-child(1) { transition-delay: 0.08s; }
+        .menu-overlay.open .menu-overlay-link:nth-child(2) { transition-delay: 0.14s; }
+        .menu-overlay.open .menu-overlay-link:nth-child(3) { transition-delay: 0.20s; }
+        .menu-overlay.open .menu-overlay-link:nth-child(4) { transition-delay: 0.26s; }
+        .menu-overlay.open .menu-overlay-link:nth-child(5) { transition-delay: 0.32s; }
+        .menu-overlay-link:hover { color: rgba(255,255,255,0.5); }
+
+        @media (max-width: 768px) {
+          .hamburger { display: flex; }
+          .header { justify-content: flex-end; }
+          .nav { display: none; }
+        }
+
+        /* === MOBILE (iPhone 12 Pro: 390×844) === */
+        @media (max-width: 480px) {
+
+          /* HERO — reduce height so it doesn't dominate the viewport */
+          .intro-section { height: 360px; }
+          .intro-tagline { font-size: 11px; letter-spacing: 0.06em; }
+
+          /* EXPERIENCE — tighten padding, allow taller expanded bodies */
+          .experience-section { padding: 56px 16px; }
+          .section-heading { margin-bottom: 32px; font-size: 13px; }
+          .exp-role-title { font-size: 16px; }
+          .exp-org-name { font-size: 12px; }
+          .exp-period-text { font-size: 11px; }
+          .exp-body.open { max-height: 600px; }
+          .exp-detail { font-size: 14px; line-height: 1.7; }
+
+          /* PROJECTS — drop the square aspect ratio, tighten padding */
+          .projects-section { padding: 56px 16px; }
+          .project-card {
+            aspect-ratio: auto;
+            padding: 24px;
+            border-radius: 16px;
+          }
+          .project-title { font-size: 18px; }
+          .project-desc { font-size: 13px; }
+
+          /* ABOUT — tighten inner padding */
+          .about-section { padding: 56px 0; }
+          .about-inner { padding: 0 16px; gap: 32px; }
+          .about-image-wrap { height: auto; border-radius: 12px; }
+          .about-image-wrap img { height: auto !important; object-fit: contain !important; }
+          .about-content p { font-size: 15px; line-height: 1.75; }
+          .about-skill { font-size: 11px; padding: 5px 10px; }
+
+          /* CONTACT — tighten padding */
+          .contact-section { padding: 56px 16px; }
+          .contact-text { font-size: 15px; margin-bottom: 28px; }
+          .contact-link-value { font-size: 14px; }
+        }
       `}</style>
 
-      {/* NAV — same centered layout */}
+      {/* NAV */}
       <header className="header">
         <nav className="nav">
           {["Home", "Experience", "Projects", "About", "Contact"].map((item) => (
@@ -507,7 +631,30 @@ function App() {
             </a>
           ))}
         </nav>
+        <button
+          className={`hamburger ${menuOpen ? "open" : ""}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
       </header>
+
+      {/* Mobile menu overlay */}
+      <div className={`menu-overlay ${menuOpen ? "open" : ""}`}>
+        {["Home", "Experience", "Projects", "About", "Contact"].map((item) => (
+          <a
+            key={item}
+            href={`#${item.toLowerCase()}`}
+            className="menu-overlay-link"
+            onClick={() => setMenuOpen(false)}
+          >
+            {item}
+          </a>
+        ))}
+      </div>
 
       {/* HERO — same full-width black block with centered name */}
       <section id="home" className="intro-section">
