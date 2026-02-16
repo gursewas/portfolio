@@ -653,7 +653,7 @@ function App() {
             {[
               { label: "Email", value: "gursewakgssaini@gmail.com", href: "mailto:gursewakgssaini@gmail.com" },
               { label: "LinkedIn", value: "linkedin.com/in/gursewaksingh", href: "https://linkedin.com" },
-              { label: "GitHub", value: "github.com/gursewaksingh", href: "https://github.com" },
+              { label: "GitHub", value: "github.com/gursewas", href: "https://github.com/gursewas" },
               { label: "Phone", value: "(916) 837-6535", href: "tel:+19168376535" },
             ].map((c, i) => (
               <a key={i} href={c.href} className="contact-link" target="_blank" rel="noopener noreferrer">
