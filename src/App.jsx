@@ -6,6 +6,7 @@ function App() {
   const [activeExp, setActiveExp] = useState(null);
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
 
   useEffect(() => {
     history.scrollRestoration = "manual";
@@ -546,6 +547,121 @@ function App() {
         }
         .contact-link-phone .contact-link-arrow { display: none; }
 
+        /* === PROJECT MODAL === */
+        .modal-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 200;
+          background: rgba(0,0,0,0.5);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.3s ease, visibility 0.3s;
+        }
+        .modal-backdrop.open {
+          opacity: 1;
+          visibility: visible;
+        }
+        .modal-card {
+          background: #fff;
+          color: #000;
+          max-width: 780px;
+          width: calc(100% - 48px);
+          max-height: 80vh;
+          overflow-y: auto;
+          border-radius: 24px;
+          padding: 48px;
+          position: relative;
+          opacity: 0;
+          transform: translateY(40px);
+          transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-backdrop.open .modal-card {
+          opacity: 1;
+          transform: none;
+        }
+        .modal-num {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 11px;
+          color: #ccc;
+          letter-spacing: 0.06em;
+          margin-bottom: 12px;
+        }
+        .modal-title {
+          font-size: 28px;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+          margin-bottom: 4px;
+        }
+        .modal-year {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 12px;
+          color: #999;
+          margin-bottom: 40px;
+        }
+        .modal-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 48px;
+        }
+        .modal-label {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #999;
+          margin-bottom: 8px;
+        }
+        .modal-label + .modal-label { margin-top: 24px; }
+        .modal-text {
+          font-size: 15px;
+          line-height: 1.8;
+          color: #666;
+          margin-bottom: 24px;
+        }
+        .modal-text:last-child { margin-bottom: 0; }
+        .modal-list {
+          list-style: none;
+          padding: 0;
+        }
+        .modal-list li {
+          font-size: 15px;
+          line-height: 1.8;
+          color: #666;
+          display: flex;
+          gap: 10px;
+        }
+        .modal-list li::before {
+          content: '—';
+          color: #ddd;
+          flex-shrink: 0;
+        }
+        .modal-stack {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 12px;
+          color: #999;
+          letter-spacing: 0.02em;
+          padding-top: 24px;
+          margin-top: 40px;
+          border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 480px) {
+          .modal-card {
+            padding: 32px 24px;
+            border-radius: 16px;
+          }
+          .modal-title { font-size: 22px; }
+          .modal-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+          }
+        }
+
         /* === FOOTER === */
         .footer {
           width: 100%;
@@ -837,6 +953,7 @@ function App() {
               <div
                 key={p.id}
                 className={`project-card fade-in s${i + 1} ${v("projects") ? "show" : ""}`}
+                onClick={() => setActiveModal(p.id)}
               >
                 <div className="project-card-top">
                   <div className="project-num">0{p.id}</div>
@@ -916,6 +1033,90 @@ function App() {
       <footer className="footer">
         <div className="footer-text">© 2026 Gursewak Singh</div>
       </footer>
+      </div>
+
+      {/* PROJECT MODAL — StructCalc */}
+      <div className={`modal-backdrop ${activeModal === 1 ? "open" : ""}`} onClick={() => setActiveModal(null)}>
+        <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-num">01</div>
+          <h2 className="modal-title">StructCalc</h2>
+          <div className="modal-year">2023</div>
+          <div className="modal-grid">
+            <div>
+              <div className="modal-label">Problem</div>
+              <p className="modal-text">Engineers spend 30-40% of their time on repetitive hand calculations that follow the same code provisions every time.</p>
+              <div className="modal-label">Solution</div>
+              <p className="modal-text">A Python-based tool with a Streamlit interface that lets engineers input parameters and instantly get code-compliant designs with full calculation reports.</p>
+            </div>
+            <div>
+              <div className="modal-label">Features</div>
+              <ul className="modal-list">
+                <li>ACI 318 concrete design</li>
+                <li>AISC steel member checks</li>
+                <li>Spread footing sizing</li>
+                <li>PDF report generation</li>
+                <li>Unit conversion built-in</li>
+              </ul>
+            </div>
+          </div>
+          <div className="modal-stack">Python · Streamlit · NumPy · ReportLab</div>
+        </div>
+      </div>
+
+      {/* PROJECT MODAL — BridgeWatch */}
+      <div className={`modal-backdrop ${activeModal === 2 ? "open" : ""}`} onClick={() => setActiveModal(null)}>
+        <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-num">02</div>
+          <h2 className="modal-title">BridgeWatch</h2>
+          <div className="modal-year">2023</div>
+          <div className="modal-grid">
+            <div>
+              <div className="modal-label">Problem</div>
+              <p className="modal-text">Bridge inspections happen on fixed schedules regardless of actual structural conditions, meaning potential issues can go undetected between inspection cycles.</p>
+              <div className="modal-label">Solution</div>
+              <p className="modal-text">A real-time dashboard that ingests sensor data from accelerometers and strain gauges installed on bridge structures, visualizes structural response patterns, and flags anomalies before they become critical.</p>
+            </div>
+            <div>
+              <div className="modal-label">Features</div>
+              <ul className="modal-list">
+                <li>Real-time sensor data ingestion</li>
+                <li>Structural response visualization</li>
+                <li>Anomaly detection alerts</li>
+                <li>Historical trend analysis</li>
+                <li>Multi-bridge monitoring</li>
+              </ul>
+            </div>
+          </div>
+          <div className="modal-stack">React · D3.js · Node.js · PostgreSQL</div>
+        </div>
+      </div>
+
+      {/* PROJECT MODAL — SitePlan AI */}
+      <div className={`modal-backdrop ${activeModal === 3 ? "open" : ""}`} onClick={() => setActiveModal(null)}>
+        <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-num">03</div>
+          <h2 className="modal-title">SitePlan AI</h2>
+          <div className="modal-year">2024</div>
+          <div className="modal-grid">
+            <div>
+              <div className="modal-label">Problem</div>
+              <p className="modal-text">Creating preliminary grading plans from raw survey data is a time-intensive manual process that delays project timelines and relies heavily on individual engineer experience.</p>
+              <div className="modal-label">Solution</div>
+              <p className="modal-text">A machine learning model that analyzes site survey data and satellite imagery to automatically generate preliminary grading plans, giving engineers a strong starting point to refine.</p>
+            </div>
+            <div>
+              <div className="modal-label">Features</div>
+              <ul className="modal-list">
+                <li>Survey data parsing and analysis</li>
+                <li>Satellite imagery processing</li>
+                <li>Automated grading plan generation</li>
+                <li>Elevation contour mapping</li>
+                <li>Export to AutoCAD format</li>
+              </ul>
+            </div>
+          </div>
+          <div className="modal-stack">Python · TensorFlow · OpenCV · Flask</div>
+        </div>
       </div>
     </>
   );
