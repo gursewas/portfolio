@@ -188,6 +188,7 @@ function App() {
         /* Subtle structural grid behind the hero name */
         .intro-grid {
           position: absolute; inset: 0; z-index: 1;
+          width: 100%; height: 100%;
           opacity: 0.08;
         }
         .intro-grid line {
