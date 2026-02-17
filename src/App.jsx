@@ -6,7 +6,6 @@ function App() {
   const [activeExp, setActiveExp] = useState(null);
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [menuKey, setMenuKey] = useState(0);
   const [activeModal, setActiveModal] = useState(null);
 
   useEffect(() => {
@@ -800,19 +799,8 @@ function App() {
           color: #fff;
           text-decoration: none;
           padding: 20px 0;
-          opacity: 0;
-          transform: translateY(20px);
-          transition: opacity 0.4s ease, transform 0.4s ease, color 0.2s ease;
+          transition: color 0.2s ease;
         }
-        .menu-overlay.open .menu-overlay-link {
-          opacity: 1;
-          transform: none;
-        }
-        .menu-overlay.open .menu-overlay-link:nth-child(2) { transition-delay: 0.05s; }
-        .menu-overlay.open .menu-overlay-link:nth-child(3) { transition-delay: 0.10s; }
-        .menu-overlay.open .menu-overlay-link:nth-child(4) { transition-delay: 0.15s; }
-        .menu-overlay.open .menu-overlay-link:nth-child(5) { transition-delay: 0.20s; }
-        .menu-overlay.open .menu-overlay-link:nth-child(6) { transition-delay: 0.25s; }
         .menu-overlay-link:hover { color: rgba(255,255,255,0.5); }
         .menu-close {
           position: absolute;
@@ -921,7 +909,7 @@ function App() {
         </nav>
         <button
           className={`hamburger ${menuOpen ? "open" : ""}`}
-          onClick={() => { if (!menuOpen) setMenuKey(k => k + 1); setMenuOpen(!menuOpen); }}
+          onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
           <span />
@@ -931,7 +919,7 @@ function App() {
       </header>
 
       {/* Mobile menu overlay */}
-      <div key={menuKey} className={`menu-overlay ${menuOpen ? "open" : ""}`}>
+      <div className={`menu-overlay ${menuOpen ? "open" : ""}`}>
         <button className="menu-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">
           <span />
           <span />
