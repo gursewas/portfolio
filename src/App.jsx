@@ -331,7 +331,7 @@ function App() {
         }
 
         @media (max-width: 768px) {
-          .exp-row:hover .exp-top { padding-left: 0; }
+          .exp-row:hover:not(.open) .exp-top { padding-left: 0; }
           .exp-top-left { flex-direction: column; gap: 2px; }
           .exp-row {
             position: relative;
