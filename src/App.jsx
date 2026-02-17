@@ -650,17 +650,6 @@ function App() {
           border-top: 1px solid #eee;
         }
 
-        @media (max-width: 480px) {
-          .modal-card {
-            padding: 32px 24px;
-            border-radius: 16px;
-          }
-          .modal-title { font-size: 22px; }
-          .modal-grid {
-            grid-template-columns: 1fr;
-            gap: 0;
-          }
-        }
 
         /* === FOOTER === */
         .footer {
@@ -785,6 +774,18 @@ function App() {
           .contact-link:hover .contact-link-arrow { transform: none; color: #ccc; }
           .contact-link-phone { pointer-events: auto; cursor: pointer; }
           .contact-link-phone .contact-link-arrow { display: inline; }
+          .modal-backdrop { align-items: flex-end; }
+          .modal-card {
+            width: 100%;
+            max-height: 90vh;
+            border-radius: 24px 24px 0 0;
+            padding: 32px 24px;
+          }
+          .modal-title { font-size: 22px; }
+          .modal-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
         }
 
         /* === MOBILE (iPhone 12 Pro: 390×844) === */
