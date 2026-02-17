@@ -111,7 +111,8 @@ function App() {
         html { scroll-behavior: smooth; }
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-          background: #fff; color: #000;
+          background: #000; color: #000;
+          animation: bodyBg 0.01s 1.8s forwards;
           -webkit-font-smoothing: antialiased;
         }
         ::selection { background: #000; color: #fff; }
@@ -142,6 +143,7 @@ function App() {
           border-bottom: 1px solid rgba(0,0,0,0.06);
           backdrop-filter: blur(12px);
           background: rgba(255,255,255,0.92);
+          visibility: hidden;
           opacity: 0;
           transform: translateY(-20px);
           animation: navReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) 1.6s forwards;
@@ -172,13 +174,14 @@ function App() {
         /* Same structure: full-width black block, centered name, image behind */
         .intro-section {
           width: 100%;
-          height: 520px;
+          height: 100vh;
           position: relative;
           background: #000;
           display: flex;
           justify-content: center;
           align-items: center;
           overflow: hidden;
+          animation: heroShrink 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.8s forwards;
         }
         .intro-bg {
           position: absolute; inset: 0;
@@ -241,12 +244,23 @@ function App() {
           to { opacity: 1; transform: none; }
         }
         @keyframes navReveal {
-          to { opacity: 1; transform: none; }
+          0% { visibility: hidden; opacity: 0; transform: translateY(-20px); }
+          0.01% { visibility: visible; opacity: 0; transform: translateY(-20px); }
+          100% { visibility: visible; opacity: 1; transform: none; }
+        }
+        @keyframes bodyBg {
+          to { background: #fff; }
+        }
+        @keyframes heroShrink {
+          to { height: 520px; }
         }
         @keyframes pageReveal {
-          to { opacity: 1; }
+          0% { visibility: hidden; opacity: 0; }
+          0.01% { visibility: visible; opacity: 0; }
+          100% { visibility: visible; opacity: 1; }
         }
         .page-content {
+          visibility: hidden;
           opacity: 0;
           animation: pageReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.8s forwards;
         }
@@ -681,7 +695,9 @@ function App() {
         @media (max-width: 480px) {
 
           /* HERO — reduce height so it doesn't dominate the viewport */
-          .intro-section { height: 360px; }
+          @keyframes heroShrink {
+            to { height: 360px; }
+          }
           .intro-tagline { font-size: 11px; letter-spacing: 0.06em; }
 
           /* EXPERIENCE — tighten padding, allow taller expanded bodies */
