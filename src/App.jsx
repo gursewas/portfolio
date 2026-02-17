@@ -572,6 +572,28 @@ function App() {
         .menu-overlay.open .menu-overlay-link:nth-child(4) { transition-delay: 0.26s; }
         .menu-overlay.open .menu-overlay-link:nth-child(5) { transition-delay: 0.32s; }
         .menu-overlay-link:hover { color: rgba(255,255,255,0.5); }
+        .menu-close {
+          position: absolute;
+          top: 28px;
+          right: 24px;
+          width: 28px;
+          height: 28px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .menu-close span {
+          position: absolute;
+          width: 100%;
+          height: 2px;
+          background: #fff;
+        }
+        .menu-close span:first-child { transform: rotate(45deg); }
+        .menu-close span:last-child { transform: rotate(-45deg); }
 
         @media (max-width: 768px) {
           .hamburger { display: flex; }
@@ -646,6 +668,10 @@ function App() {
 
       {/* Mobile menu overlay */}
       <div className={`menu-overlay ${menuOpen ? "open" : ""}`}>
+        <button className="menu-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">
+          <span />
+          <span />
+        </button>
         {["Home", "Experience", "Projects", "About", "Contact"].map((item) => (
           <a
             key={item}
