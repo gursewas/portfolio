@@ -511,6 +511,10 @@ function App() {
         .contact-link:hover .contact-link-arrow {
           transform: translateX(4px); color: #000;
         }
+        .contact-link-phone {
+          pointer-events: auto; cursor: default;
+        }
+        .contact-link-phone .contact-link-arrow { display: none; }
 
         /* === FOOTER === */
         .footer {
@@ -629,6 +633,8 @@ function App() {
           .nav { display: none; }
           .contact-link:hover { padding-left: 0; }
           .contact-link:hover .contact-link-arrow { transform: none; color: #ccc; }
+          .contact-link-phone { pointer-events: auto; cursor: pointer; }
+          .contact-link-phone .contact-link-arrow { display: inline; }
         }
 
         /* === MOBILE (iPhone 12 Pro: 390×844) === */
@@ -858,7 +864,7 @@ function App() {
               { label: "GitHub", value: "github.com/gursewas", href: "https://github.com/gursewas" },
               { label: "Phone", value: "(916) 837-6535", href: "tel:+19168376535" },
             ].map((c, i) => (
-              <a key={i} href={c.href} className="contact-link" target="_blank" rel="noopener noreferrer">
+              <a key={i} href={c.href} className={`contact-link${c.label === "Phone" ? " contact-link-phone" : ""}`} target="_blank" rel="noopener noreferrer" onClick={c.label === "Phone" ? (e) => { if (!window.matchMedia("(max-width: 768px)").matches) e.preventDefault(); } : undefined}>
                 <div>
                   <div className="contact-link-label">{c.label}</div>
                   <div className="contact-link-value">{c.value}</div>
