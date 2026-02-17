@@ -111,6 +111,7 @@ function App() {
         }
         ::selection { background: #000; color: #fff; }
         a { color: inherit; text-decoration: none; }
+        section[id] { scroll-margin-top: 80px; }
 
         /* ANIMATIONS */
         .fade-in {
