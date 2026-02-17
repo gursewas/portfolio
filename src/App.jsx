@@ -1085,7 +1085,7 @@ function App() {
             Contact
           </h2>
           <p className={`contact-text fade-in s1 ${v("contact") ? "show" : ""}`}>
-            Interested in working together or just want to connect — reach out.
+            Interested in working together or want to connect — reach out.
           </p>
           <div className={`contact-links fade-in s2 ${v("contact") ? "show" : ""}`}>
             {[
