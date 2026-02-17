@@ -412,11 +412,16 @@ function App() {
         }
         .about-image-wrap {
           flex-shrink: 0;
-          width: 280px; height: 360px;
+          width: 280px;
           background: #1a1a1a;
           border-radius: 16px;
           overflow: hidden;
           position: relative;
+        }
+        .about-image-wrap img {
+          width: 100%;
+          height: auto;
+          display: block;
         }
         .about-image-placeholder {
           width: 100%; height: 100%;
@@ -459,7 +464,7 @@ function App() {
             flex-direction: column; padding: 0 24px;
             gap: 40px;
           }
-          .about-image-wrap { width: 100%; height: 280px; }
+          .about-image-wrap { width: 100%; }
         }
 
         /* === CONTACT === */
@@ -652,8 +657,7 @@ function App() {
           /* ABOUT — tighten inner padding */
           .about-section { padding: 56px 0; }
           .about-inner { padding: 0 16px; gap: 32px; }
-          .about-image-wrap { height: auto; border-radius: 12px; }
-          .about-image-wrap img { height: auto !important; object-fit: contain !important; }
+          .about-image-wrap { border-radius: 12px; }
           .about-content p { font-size: 15px; line-height: 1.75; }
           .about-skill { font-size: 11px; padding: 5px 10px; }
 
@@ -811,7 +815,7 @@ function App() {
       >
         <div className={`about-inner fade-in ${v("about") ? "show" : ""}`}>
           <div className="about-image-wrap">
-            <img src={profileImg} alt="Gursewak Singh" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={profileImg} alt="Gursewak Singh" />
           </div>
           <div className="about-content">
             <h2>About Me</h2>
