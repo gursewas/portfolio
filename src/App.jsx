@@ -6,6 +6,7 @@ function App() {
   const [activeExp, setActiveExp] = useState(null);
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuKey, setMenuKey] = useState(0);
   const [activeModal, setActiveModal] = useState(null);
 
   useEffect(() => {
@@ -920,7 +921,7 @@ function App() {
         </nav>
         <button
           className={`hamburger ${menuOpen ? "open" : ""}`}
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => { if (!menuOpen) setMenuKey(k => k + 1); setMenuOpen(!menuOpen); }}
           aria-label="Toggle menu"
         >
           <span />
@@ -930,7 +931,7 @@ function App() {
       </header>
 
       {/* Mobile menu overlay */}
-      <div className={`menu-overlay ${menuOpen ? "open" : ""}`}>
+      <div key={menuKey} className={`menu-overlay ${menuOpen ? "open" : ""}`}>
         <button className="menu-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">
           <span />
           <span />
