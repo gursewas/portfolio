@@ -8,6 +8,11 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
+    history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const h = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", h, { passive: true });
     return () => window.removeEventListener("scroll", h);
@@ -137,6 +142,9 @@ function App() {
           border-bottom: 1px solid rgba(0,0,0,0.06);
           backdrop-filter: blur(12px);
           background: rgba(255,255,255,0.92);
+          opacity: 0;
+          transform: translateY(-20px);
+          animation: navReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) 1.6s forwards;
         }
         .nav {
           display: flex;
@@ -202,6 +210,9 @@ function App() {
           text-transform: uppercase;
           line-height: 1.1;
           margin-bottom: 16px;
+          opacity: 0;
+          transform: translateY(30px);
+          animation: heroNameIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1s forwards;
         }
         .intro-tagline {
           font-family: 'IBM Plex Mono', monospace;
@@ -209,6 +220,35 @@ function App() {
           letter-spacing: 0.1em;
           color: rgba(255,255,255,0.5);
           text-transform: uppercase;
+          opacity: 0;
+          transform: translateY(20px);
+          animation: heroTaglineIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 1.3s forwards;
+        }
+        .intro-wipe {
+          position: absolute;
+          inset: 0;
+          z-index: 10;
+          background: #fff;
+          animation: heroWipe 0.9s cubic-bezier(0.7, 0, 0.3, 1) 0.3s forwards;
+        }
+        @keyframes heroWipe {
+          to { transform: translateY(-100%); }
+        }
+        @keyframes heroNameIn {
+          to { opacity: 1; transform: none; }
+        }
+        @keyframes heroTaglineIn {
+          to { opacity: 1; transform: none; }
+        }
+        @keyframes navReveal {
+          to { opacity: 1; transform: none; }
+        }
+        @keyframes pageReveal {
+          to { opacity: 1; }
+        }
+        .page-content {
+          opacity: 0;
+          animation: pageReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.8s forwards;
         }
         /* Thin line at bottom of hero */
         .intro-line {
@@ -721,6 +761,7 @@ function App() {
 
       {/* HERO — same full-width black block with centered name */}
       <section id="home" className="intro-section">
+        <div className="intro-wipe" />
         {/* Structural grid — subtle engineering nod */}
         <svg className="intro-grid" viewBox="0 0 1200 520" preserveAspectRatio="xMidYMid slice">
           {/* Vertical lines */}
@@ -746,6 +787,7 @@ function App() {
         <div className="intro-line" />
       </section>
 
+      <div className="page-content">
       {/* EXPERIENCE */}
       <section
         id="experience"
@@ -880,6 +922,7 @@ function App() {
       <footer className="footer">
         <div className="footer-text">© 2026 Gursewak Singh</div>
       </footer>
+      </div>
     </>
   );
 }
