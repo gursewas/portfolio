@@ -289,7 +289,6 @@ function App() {
         }
 
         @media (max-width: 640px) {
-          .exp-top { flex-direction: column; align-items: flex-start; gap: 4px; }
           .exp-top-left { flex-direction: column; gap: 2px; }
         }
 
@@ -732,11 +731,9 @@ function App() {
                   <div className="exp-top-left">
                     <span className="exp-role-title">{e.role}</span>
                     <span className="exp-org-name">{e.org}</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
                     <span className="exp-period-text">{e.period}</span>
-                    <span className={`exp-plus ${activeExp === i ? "open" : ""}`}>+</span>
                   </div>
+                  <span className={`exp-plus ${activeExp === i ? "open" : ""}`}>+</span>
                 </div>
                 <div className={`exp-body ${activeExp === i ? "open" : ""}`}>
                   <div className="exp-body-inner">
