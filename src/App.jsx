@@ -728,8 +728,9 @@ function App() {
           {["Home", "Experience", "Projects", "About", "Contact"].map((item) => (
             <a
               key={item}
-              href={`#${item.toLowerCase()}`}
+              href="/"
               className="nav-link"
+              onClick={(e) => { e.preventDefault(); if (item === "Home") { window.scrollTo({ top: 0, behavior: "smooth" }); } else { document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: "smooth" }); } window.history.replaceState(null, "", "/"); }}
             >
               {item}
             </a>
@@ -755,9 +756,9 @@ function App() {
         {["Home", "Experience", "Projects", "About", "Contact"].map((item) => (
           <a
             key={item}
-            href={`#${item.toLowerCase()}`}
+            href="/"
             className="menu-overlay-link"
-            onClick={() => setMenuOpen(false)}
+            onClick={(e) => { e.preventDefault(); setMenuOpen(false); if (item === "Home") { window.scrollTo({ top: 0, behavior: "smooth" }); } else { document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: "smooth" }); } window.history.replaceState(null, "", "/"); }}
           >
             {item}
           </a>
