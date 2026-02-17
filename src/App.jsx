@@ -424,17 +424,6 @@ function App() {
           transition: color 0.35s ease;
         }
         .project-card:hover .project-stack { color: rgba(255,255,255,0.35); }
-        /* Subtle corner node — structural nod */
-        .project-node {
-          position: absolute; top: 24px; right: 24px;
-          width: 8px; height: 8px; border-radius: 50%;
-          border: 1.5px solid #e5e5e5;
-          transition: border-color 0.35s ease, background 0.35s ease;
-        }
-        .project-card:hover .project-node {
-          border-color: rgba(255,255,255,0.3);
-          background: rgba(255,255,255,0.3);
-        }
 
         /* === ABOUT === */
         /* Same structure: full-width black section, image left, text right */
@@ -857,7 +846,6 @@ function App() {
                 <div className="project-card-bottom">
                   <div className="project-stack">{p.stack}</div>
                 </div>
-                <div className="project-node" />
               </div>
             ))}
           </div>
