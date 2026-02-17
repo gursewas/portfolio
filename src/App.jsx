@@ -247,7 +247,7 @@ function App() {
           padding: 24px 0;
           transition: padding 0.3s ease;
         }
-        .exp-row:hover .exp-top { padding-left: 8px; }
+        .exp-row:hover:not(.open) .exp-top { padding-left: 8px; }
         .exp-top-left {
           display: flex; gap: 24px; align-items: baseline;
         }
