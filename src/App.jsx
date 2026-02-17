@@ -627,6 +627,8 @@ function App() {
           .hamburger { display: flex; }
           .header { justify-content: flex-end; }
           .nav { display: none; }
+          .contact-link:hover { padding-left: 0; }
+          .contact-link:hover .contact-link-arrow { transform: none; color: #ccc; }
         }
 
         /* === MOBILE (iPhone 12 Pro: 390×844) === */
