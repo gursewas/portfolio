@@ -111,8 +111,7 @@ function App() {
         html { scroll-behavior: smooth; }
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-          background: #000; color: #000;
-          animation: bodyBg 0.01s 1.8s forwards;
+          background: #fff; color: #000;
           -webkit-font-smoothing: antialiased;
         }
         ::selection { background: #000; color: #fff; }
@@ -143,7 +142,6 @@ function App() {
           border-bottom: 1px solid rgba(0,0,0,0.06);
           backdrop-filter: blur(12px);
           background: rgba(255,255,255,0.92);
-          visibility: hidden;
           opacity: 0;
           transform: translateY(-20px);
           animation: navReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) 1.6s forwards;
@@ -174,14 +172,13 @@ function App() {
         /* Same structure: full-width black block, centered name, image behind */
         .intro-section {
           width: 100%;
-          height: 100vh;
+          height: 520px;
           position: relative;
           background: #000;
           display: flex;
           justify-content: center;
           align-items: center;
           overflow: hidden;
-          animation: heroShrink 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.8s forwards;
         }
         .intro-bg {
           position: absolute; inset: 0;
@@ -244,23 +241,12 @@ function App() {
           to { opacity: 1; transform: none; }
         }
         @keyframes navReveal {
-          0% { visibility: hidden; opacity: 0; transform: translateY(-20px); }
-          0.01% { visibility: visible; opacity: 0; transform: translateY(-20px); }
-          100% { visibility: visible; opacity: 1; transform: none; }
-        }
-        @keyframes bodyBg {
-          to { background: #fff; }
-        }
-        @keyframes heroShrink {
-          to { height: 520px; }
+          to { opacity: 1; transform: none; }
         }
         @keyframes pageReveal {
-          0% { visibility: hidden; opacity: 0; }
-          0.01% { visibility: visible; opacity: 0; }
-          100% { visibility: visible; opacity: 1; }
+          to { opacity: 1; }
         }
         .page-content {
-          visibility: hidden;
           opacity: 0;
           animation: pageReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.8s forwards;
         }
@@ -683,8 +669,12 @@ function App() {
 
         @media (max-width: 768px) {
           .hamburger { display: flex; }
-          .header { justify-content: flex-end; }
+          .header { justify-content: flex-end; opacity: 1; transform: none; animation: none; }
           .nav { display: none; }
+          .intro-wipe { display: none; }
+          .intro-name { opacity: 1; transform: none; animation: none; }
+          .intro-tagline { opacity: 1; transform: none; animation: none; }
+          .page-content { opacity: 1; animation: none; }
           .contact-link:hover { padding-left: 0; }
           .contact-link:hover .contact-link-arrow { transform: none; color: #ccc; }
           .contact-link-phone { pointer-events: auto; cursor: pointer; }
@@ -695,9 +685,7 @@ function App() {
         @media (max-width: 480px) {
 
           /* HERO — reduce height so it doesn't dominate the viewport */
-          @keyframes heroShrink {
-            to { height: 360px; }
-          }
+          .intro-section { height: 360px; }
           .intro-tagline { font-size: 11px; letter-spacing: 0.06em; }
 
           /* EXPERIENCE — tighten padding, allow taller expanded bodies */
