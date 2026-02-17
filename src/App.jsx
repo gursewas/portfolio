@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import profileImg from "./assets/profile.png";
 
 function App() {
@@ -35,6 +35,72 @@ function App() {
   }, []);
 
   const v = (id) => visibleSections.has(id);
+
+  const modalTouchRef = useRef({ startY: 0, currentY: 0, dragging: false, card: null, atTop: false });
+
+  const handleModalTouchStart = (e) => {
+    const card = e.currentTarget;
+    modalTouchRef.current = {
+      startY: e.touches[0].clientY,
+      currentY: 0,
+      dragging: false,
+      card,
+      atTop: card.scrollTop <= 0,
+    };
+  };
+
+  const handleModalTouchMove = (e) => {
+    const ref = modalTouchRef.current;
+    if (!ref.card || !ref.atTop) return;
+    const deltaY = e.touches[0].clientY - ref.startY;
+    if (deltaY > 0) {
+      e.preventDefault();
+      ref.dragging = true;
+      ref.currentY = deltaY;
+      ref.card.style.transform = `translateY(${deltaY}px)`;
+      ref.card.style.transition = 'none';
+    } else if (ref.dragging) {
+      ref.currentY = 0;
+      ref.card.style.transform = 'translateY(0)';
+    }
+  };
+
+  const handleModalTouchEnd = () => {
+    const ref = modalTouchRef.current;
+    if (!ref.card || !ref.dragging) {
+      modalTouchRef.current = { startY: 0, currentY: 0, dragging: false, card: null, atTop: false };
+      return;
+    }
+    if (ref.currentY > 100) {
+      const card = ref.card;
+      card.style.transition = 'transform 0.3s ease';
+      card.style.transform = 'translateY(100%)';
+      setTimeout(() => {
+        setActiveModal(null);
+        card.style.transform = '';
+        card.style.transition = '';
+      }, 300);
+    } else {
+      ref.card.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+      ref.card.style.transform = '';
+      setTimeout(() => {
+        if (ref.card) ref.card.style.transition = '';
+      }, 300);
+    }
+    modalTouchRef.current = { startY: 0, currentY: 0, dragging: false, card: null, atTop: false };
+  };
+
+  useEffect(() => {
+    const cards = document.querySelectorAll('.modal-card');
+    cards.forEach((card) => {
+      card.addEventListener('touchmove', handleModalTouchMove, { passive: false });
+    });
+    return () => {
+      cards.forEach((card) => {
+        card.removeEventListener('touchmove', handleModalTouchMove);
+      });
+    };
+  }, []);
 
   const experiences = [
     {
@@ -649,6 +715,14 @@ function App() {
           margin-top: 40px;
           border-top: 1px solid #eee;
         }
+        .modal-handle {
+          display: none;
+          width: 36px;
+          height: 4px;
+          background: #ddd;
+          border-radius: 2px;
+          margin: 0 auto 16px;
+        }
 
 
         /* === FOOTER === */
@@ -779,8 +853,10 @@ function App() {
             width: 100%;
             max-height: 90vh;
             border-radius: 24px 24px 0 0;
-            padding: 32px 24px;
+            padding: 16px 24px 32px;
+            transform: translateY(100%);
           }
+          .modal-handle { display: block; }
           .modal-title { font-size: 22px; }
           .modal-grid {
             grid-template-columns: 1fr;
@@ -1038,7 +1114,8 @@ function App() {
 
       {/* PROJECT MODAL — StructCalc */}
       <div className={`modal-backdrop ${activeModal === 1 ? "open" : ""}`} onClick={() => setActiveModal(null)}>
-        <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-card" onClick={(e) => e.stopPropagation()} onTouchStart={handleModalTouchStart} onTouchEnd={handleModalTouchEnd}>
+          <div className="modal-handle" />
           <div className="modal-num">01</div>
           <h2 className="modal-title">StructCalc</h2>
           <div className="modal-year">2023</div>
@@ -1066,7 +1143,8 @@ function App() {
 
       {/* PROJECT MODAL — BridgeWatch */}
       <div className={`modal-backdrop ${activeModal === 2 ? "open" : ""}`} onClick={() => setActiveModal(null)}>
-        <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-card" onClick={(e) => e.stopPropagation()} onTouchStart={handleModalTouchStart} onTouchEnd={handleModalTouchEnd}>
+          <div className="modal-handle" />
           <div className="modal-num">02</div>
           <h2 className="modal-title">BridgeWatch</h2>
           <div className="modal-year">2023</div>
@@ -1094,7 +1172,8 @@ function App() {
 
       {/* PROJECT MODAL — SitePlan AI */}
       <div className={`modal-backdrop ${activeModal === 3 ? "open" : ""}`} onClick={() => setActiveModal(null)}>
-        <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-card" onClick={(e) => e.stopPropagation()} onTouchStart={handleModalTouchStart} onTouchEnd={handleModalTouchEnd}>
+          <div className="modal-handle" />
           <div className="modal-num">03</div>
           <h2 className="modal-title">SitePlan AI</h2>
           <div className="modal-year">2024</div>
