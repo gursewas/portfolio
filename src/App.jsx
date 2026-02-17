@@ -288,8 +288,31 @@ function App() {
           content: '—'; color: #ddd; flex-shrink: 0;
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
+          .exp-row:hover .exp-top { padding-left: 0; }
           .exp-top-left { flex-direction: column; gap: 2px; }
+          .exp-row {
+            position: relative;
+            transition: background 0.3s ease;
+          }
+          .exp-row::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #000;
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+          .exp-row.open {
+            background: #fafafa;
+          }
+          .exp-row.open::before {
+            transform: scaleY(1);
+          }
         }
 
         /* === PROJECTS === */
@@ -724,7 +747,7 @@ function App() {
             {experiences.map((e, i) => (
               <div
                 key={i}
-                className="exp-row"
+                className={`exp-row ${activeExp === i ? "open" : ""}`}
                 onClick={() => setActiveExp(activeExp === i ? null : i)}
               >
                 <div className="exp-top">
