@@ -67,7 +67,7 @@ function App() {
       role: "Structural Engineer Intern",
       org: "Jacobs Engineering",
       period: "June 2018 — Sep. 2018",
-      location: "",
+      location: "Sacramento, CA",
       work: [
         "Thoroughly examined 14 technical manuals (i.e., AISC Steel Manual & ASCE 7), gained a comprehensive understanding of industry codes, regulatory standards, and company policies",
         "Under the direction of a Professional Engineer, performed a variety of basic engineering support assignments that required a fundamental knowledge of design/drafting standards, practices, and techniques",
