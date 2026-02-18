@@ -7,6 +7,7 @@ function App() {
   const [activeExp, setActiveExp] = useState(null);
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,6 +34,11 @@ function App() {
     );
     document.querySelectorAll("[data-section]").forEach((s) => obs.observe(s));
     return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setActiveSlide((s) => (s + 1) % 3), 15000);
+    return () => clearInterval(timer);
   }, []);
 
   const v = (id) => visibleSections.has(id);
@@ -814,6 +820,109 @@ function App() {
           .contact-section { padding: 56px 16px; }
           .contact-text { font-size: 15px; margin-bottom: 28px; }
           .contact-link-value { font-size: 14px; }
+
+          /* BEYOND — mobile */
+          .btb-section { padding: 56px 16px; }
+          .btb-visual { transform: scale(0.85); }
+          .btb-text { font-size: 14px; padding: 0 8px; }
+          .btb-arrows button { width: 36px; height: 36px; }
+        }
+
+        /* === BEYOND THE BLUEPRINTS === */
+        .btb-section {
+          width: 100%;
+          padding: 140px 24px 140px;
+          background: #fff;
+          border-top: 1px solid #e5e5e5;
+          border-bottom: 1px solid #e5e5e5;
+        }
+        .btb-inner {
+          max-width: 700px;
+          margin: 0 auto;
+          text-align: center;
+        }
+        .btb-carousel {
+          position: relative;
+          overflow: hidden;
+        }
+        .btb-slide {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          transition: opacity 0.6s ease;
+          pointer-events: none;
+        }
+        .btb-slide.active {
+          position: relative;
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .btb-tag {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: #bbb;
+          margin-bottom: 28px;
+        }
+        .btb-visual {
+          height: 130px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 28px;
+        }
+        .btb-text {
+          font-size: 15px;
+          line-height: 1.8;
+          color: #888;
+          max-width: 540px;
+        }
+        .btb-nav {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 20px;
+          margin-top: 36px;
+        }
+        .btb-dots {
+          display: flex;
+          gap: 8px;
+        }
+        .btb-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #e5e5e5;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+        .btb-dot.active {
+          background: #000;
+        }
+        .btb-arrows button {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          border: 1px solid #e5e5e5;
+          background: #fff;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          color: #999;
+          transition: all 0.25s ease;
+        }
+        .btb-arrows button:hover {
+          border-color: #000;
+          color: #000;
         }
       `}</style>
 
@@ -1000,6 +1109,91 @@ function App() {
                 "Node.js", "SQL", "Git", "MATLAB",
               ].map((s) => (
                 <span key={s} className="about-skill">{s}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      {/* BEYOND THE BLUEPRINTS */}
+      <section
+        id="beyond"
+        className="btb-section"
+        data-section
+      >
+        <div className={`btb-inner fade-in ${v("beyond") ? "show" : ""}`}>
+          <div className="btb-carousel">
+            {/* Slide 1 — Currently Reading */}
+            <div className={`btb-slide ${activeSlide === 0 ? "active" : ""}`}>
+              <div className="btb-tag">Currently Reading</div>
+              <div className="btb-visual">
+                <svg width="180" height="130" viewBox="0 0 180 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Book stack — 5 rectangles */}
+                  <rect x="30" y="6" width="24" height="124" rx="2" stroke="#000" strokeWidth="1" />
+                  <rect x="58" y="26" width="20" height="104" rx="2" stroke="#000" strokeWidth="1" />
+                  <rect x="82" y="16" width="22" height="114" rx="2" stroke="#000" strokeWidth="1" />
+                  {/* Center book with spine */}
+                  <rect x="108" y="10" width="24" height="120" rx="2" stroke="#000" strokeWidth="1" />
+                  <line x1="120" y1="14" x2="120" y2="126" stroke="#000" strokeWidth="0.5" strokeDasharray="2 3" />
+                  <rect x="136" y="30" width="20" height="100" rx="2" stroke="#000" strokeWidth="1" />
+                </svg>
+              </div>
+              <p className="btb-text">
+                Reading books that shift my perspective is something I greatly enjoy. My current read is{" "}
+                <em>The Great Mental Models</em> by Shane Parrish.
+              </p>
+            </div>
+
+            {/* Slide 2 — After Hours */}
+            <div className={`btb-slide ${activeSlide === 1 ? "active" : ""}`}>
+              <div className="btb-tag">After Hours</div>
+              <div className="btb-visual">
+                <svg width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="65" cy="65" r="58" stroke="#000" strokeWidth="1" />
+                  {/* Crosshair lines */}
+                  <line x1="65" y1="12" x2="65" y2="118" stroke="#000" strokeWidth="0.5" />
+                  <line x1="12" y1="65" x2="118" y2="65" stroke="#000" strokeWidth="0.5" />
+                  {/* Bitcoin symbol */}
+                  <text x="65" y="78" textAnchor="middle" fontSize="42" fill="#000" fontWeight="500">&#x20BF;</text>
+                </svg>
+              </div>
+              <p className="btb-text">
+                Bitcoin has been a genuine curiosity of mine and <em>The Bitcoin Standard</em> by Saifedean Ammous was an eye-opening read.
+              </p>
+            </div>
+
+            {/* Slide 3 — Off the Grid */}
+            <div className={`btb-slide ${activeSlide === 2 ? "active" : ""}`}>
+              <div className="btb-tag">Off the Grid</div>
+              <div className="btb-visual">
+                <svg width="220" height="130" viewBox="0 0 220 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Dashed arc flight path */}
+                  <path d="M 30,100 Q 110,10 190,100" stroke="#000" strokeWidth="1" strokeDasharray="5 4" fill="none" />
+                  {/* Departure dot */}
+                  <circle cx="30" cy="100" r="5" fill="#000" />
+                  {/* Arrival dot */}
+                  <circle cx="190" cy="100" r="5" fill="#000" />
+                  {/* Midpoint dots */}
+                  <circle cx="80" cy="45" r="3" fill="#000" />
+                  <circle cx="140" cy="45" r="3" fill="#000" />
+                  {/* Plane silhouette */}
+                  <g transform="translate(100, 14) rotate(45, 11.5, 12) scale(1.3)">
+                    <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="rgba(0,0,0,0.12)" />
+                  </g>
+                </svg>
+              </div>
+              <p className="btb-text">
+                There's nothing like landing somewhere new — the food, the architecture, the energy. Europe and Mexico have been highlights so far.
+              </p>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <div className="btb-nav">
+            <div className="btb-dots">
+              {[0, 1, 2].map((i) => (
+                <button key={i} className={`btb-dot ${activeSlide === i ? "active" : ""}`} onClick={() => setActiveSlide(i)} aria-label={`Slide ${i + 1}`} />
               ))}
             </div>
           </div>
