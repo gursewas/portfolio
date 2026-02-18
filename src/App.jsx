@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import profileImg from "./assets/profile.png";
 
 function App() {
@@ -906,6 +907,7 @@ function App() {
               {item}
             </a>
           ))}
+          <Link to="/agent" className="nav-link">Agent</Link>
         </nav>
         <button
           className={`hamburger ${menuOpen ? "open" : ""}`}
@@ -934,6 +936,7 @@ function App() {
             {item}
           </a>
         ))}
+        <Link to="/agent" className="menu-overlay-link" onClick={() => setMenuOpen(false)}>Agent</Link>
       </div>
 
       {/* HERO — same full-width black block with centered name */}
