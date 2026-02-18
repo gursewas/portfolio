@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import profileImg from "./assets/profile.png";
 
 function App() {
@@ -7,74 +7,7 @@ function App() {
   const [activeExp, setActiveExp] = useState(null);
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeModal, setActiveModal] = useState(null);
-  const SCOPE_API = "https://scope-of-work-api-production.up.railway.app";
-  const [scopeForm, setScopeForm] = useState({
-    project_owner: "", project_objective: "", project_budget: "",
-    project_info: "", technical_services: "", completion_estimate: "",
-  });
-  const [scopeLoading, setScopeLoading] = useState(false);
-  const [scopeResult, setScopeResult] = useState(null);
-  const [scopeError, setScopeError] = useState(null);
-  const [scopePdfLoading, setScopePdfLoading] = useState(false);
-
-  const handleScopeSubmit = async (e) => {
-    e.preventDefault();
-    setScopeLoading(true);
-    setScopeResult(null);
-    setScopeError(null);
-    try {
-      const res = await fetch(`${SCOPE_API}/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(scopeForm),
-      });
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const json = await res.json();
-      setScopeResult(json.report || "No report generated.");
-    } catch (err) {
-      setScopeError(err.message);
-    } finally {
-      setScopeLoading(false);
-    }
-  };
-
-  const handleScopePdf = async () => {
-    setScopePdfLoading(true);
-    try {
-      const res = await fetch(`${SCOPE_API}/to-pdf`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          report: scopeResult,
-          project_owner: scopeForm.project_owner || "scope_of_work",
-        }),
-      });
-      if (!res.ok) throw new Error(`PDF error: ${res.status}`);
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "scope_of_work.pdf";
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      setScopeError(err.message);
-    } finally {
-      setScopePdfLoading(false);
-    }
-  };
-
-  const handleScopeClose = () => {
-    setActiveModal(null);
-    setScopeForm({
-      project_owner: "", project_objective: "", project_budget: "",
-      project_info: "", technical_services: "", completion_estimate: "",
-    });
-    setScopeLoading(false);
-    setScopeResult(null);
-    setScopeError(null);
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
     history.scrollRestoration = "manual";
@@ -103,72 +36,6 @@ function App() {
   }, []);
 
   const v = (id) => visibleSections.has(id);
-
-  const modalTouchRef = useRef({ startY: 0, currentY: 0, dragging: false, card: null, atTop: false });
-
-  const handleModalTouchStart = (e) => {
-    const card = e.currentTarget;
-    modalTouchRef.current = {
-      startY: e.touches[0].clientY,
-      currentY: 0,
-      dragging: false,
-      card,
-      atTop: card.scrollTop <= 0,
-    };
-  };
-
-  const handleModalTouchMove = (e) => {
-    const ref = modalTouchRef.current;
-    if (!ref.card || !ref.atTop) return;
-    const deltaY = e.touches[0].clientY - ref.startY;
-    if (deltaY > 0) {
-      e.preventDefault();
-      ref.dragging = true;
-      ref.currentY = deltaY;
-      ref.card.style.transform = `translateY(${deltaY}px)`;
-      ref.card.style.transition = 'none';
-    } else if (ref.dragging) {
-      ref.currentY = 0;
-      ref.card.style.transform = 'translateY(0)';
-    }
-  };
-
-  const handleModalTouchEnd = () => {
-    const ref = modalTouchRef.current;
-    if (!ref.card || !ref.dragging) {
-      modalTouchRef.current = { startY: 0, currentY: 0, dragging: false, card: null, atTop: false };
-      return;
-    }
-    if (ref.currentY > 100) {
-      const card = ref.card;
-      card.style.transition = 'transform 0.3s ease';
-      card.style.transform = 'translateY(100%)';
-      setTimeout(() => {
-        setActiveModal(null);
-        card.style.transform = '';
-        card.style.transition = '';
-      }, 300);
-    } else {
-      ref.card.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-      ref.card.style.transform = '';
-      setTimeout(() => {
-        if (ref.card) ref.card.style.transition = '';
-      }, 300);
-    }
-    modalTouchRef.current = { startY: 0, currentY: 0, dragging: false, card: null, atTop: false };
-  };
-
-  useEffect(() => {
-    const cards = document.querySelectorAll('.modal-card');
-    cards.forEach((card) => {
-      card.addEventListener('touchmove', handleModalTouchMove, { passive: false });
-    });
-    return () => {
-      cards.forEach((card) => {
-        card.removeEventListener('touchmove', handleModalTouchMove);
-      });
-    };
-  }, []);
 
   const experiences = [
     {
@@ -244,14 +111,13 @@ function App() {
       title: "Scope AI",
       description: "An AI-powered web app that generates professional Civil Engineering Scope of Work documents as downloadable PDFs from project details using deep research.",
       stack: "Python · React · OpenAI",
-      hasModal: true,
+      link: "/agent",
     },
     {
       id: 2,
       title: "Quantities Extractor",
       description: "Automates material takeoffs from construction plans. Parses blueprints to extract quantities for cost estimation and procurement.",
       stack: "Python · PyMuPDF · Pandas",
-      hasModal: false,
     },
   ];
 
@@ -663,88 +529,6 @@ function App() {
           .project-row-stack { text-align: left; }
         }
 
-        /* === SCOPE AI MODAL FORM === */
-        .scope-form {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          margin-top: 32px;
-        }
-        .scope-field label {
-          display: block;
-          font-family: 'IBM Plex Mono', monospace;
-          font-size: 11px;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: #999;
-          margin-bottom: 8px;
-        }
-        .scope-field input,
-        .scope-field select,
-        .scope-field textarea {
-          width: 100%;
-          font-size: 15px;
-          font-family: inherit;
-          padding: 14px 16px;
-          border: 1px solid #e5e5e5;
-          border-radius: 12px;
-          background: #fafafa;
-          outline: none;
-          transition: border-color 0.2s ease, background 0.2s ease;
-        }
-        .scope-field input:focus,
-        .scope-field select:focus,
-        .scope-field textarea:focus {
-          border-color: #000;
-          background: #fff;
-        }
-        .scope-field textarea {
-          min-height: 100px;
-          resize: vertical;
-        }
-        .scope-field select {
-          cursor: pointer;
-          appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.5'/%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          background-position: right 16px center;
-          padding-right: 40px;
-        }
-        .scope-submit {
-          font-family: 'IBM Plex Mono', monospace;
-          font-size: 13px;
-          font-weight: 500;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          padding: 16px 32px;
-          border: 2px solid #000;
-          background: #000;
-          color: #fff;
-          cursor: pointer;
-          border-radius: 12px;
-          margin-top: 8px;
-          transition: background 0.2s ease, color 0.2s ease;
-        }
-        .scope-submit:hover { background: #fff; color: #000; }
-        .scope-submit:disabled {
-          opacity: 0.4;
-          cursor: not-allowed;
-        }
-        .scope-submit:disabled:hover {
-          background: #000;
-          color: #fff;
-        }
-        .scope-result {
-          margin-top: 24px;
-          padding: 24px;
-          background: #fafafa;
-          border-radius: 12px;
-          border: 1px solid #e5e5e5;
-          font-size: 15px;
-          line-height: 1.8;
-          color: #666;
-        }
-
         /* === ABOUT === */
         /* Same structure: full-width black section, image left, text right */
         .about-section {
@@ -866,118 +650,6 @@ function App() {
         }
         .contact-link-phone .contact-link-arrow { display: none; }
 
-        /* === PROJECT MODAL === */
-        .modal-backdrop {
-          position: fixed;
-          inset: 0;
-          z-index: 200;
-          background: rgba(0,0,0,0.5);
-          backdrop-filter: blur(4px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          opacity: 0;
-          visibility: hidden;
-          transition: opacity 0.3s ease, visibility 0.3s;
-        }
-        .modal-backdrop.open {
-          opacity: 1;
-          visibility: visible;
-        }
-        .modal-card {
-          background: #fff;
-          color: #000;
-          max-width: 780px;
-          width: calc(100% - 48px);
-          max-height: 80vh;
-          overflow-y: auto;
-          border-radius: 24px;
-          padding: 48px;
-          position: relative;
-          opacity: 0;
-          transform: translateY(40px);
-          transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-                      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .modal-backdrop.open .modal-card {
-          opacity: 1;
-          transform: none;
-        }
-        .modal-num {
-          font-family: 'IBM Plex Mono', monospace;
-          font-size: 11px;
-          color: #ccc;
-          letter-spacing: 0.06em;
-          margin-bottom: 12px;
-        }
-        .modal-title {
-          font-size: 28px;
-          font-weight: 600;
-          letter-spacing: -0.01em;
-          margin-bottom: 4px;
-        }
-        .modal-year {
-          font-family: 'IBM Plex Mono', monospace;
-          font-size: 12px;
-          color: #999;
-          margin-bottom: 40px;
-        }
-        .modal-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 48px;
-        }
-        .modal-label {
-          font-family: 'IBM Plex Mono', monospace;
-          font-size: 11px;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: #999;
-          margin-bottom: 8px;
-        }
-        .modal-label + .modal-label { margin-top: 24px; }
-        .modal-text {
-          font-size: 15px;
-          line-height: 1.8;
-          color: #666;
-          margin-bottom: 24px;
-        }
-        .modal-text:last-child { margin-bottom: 0; }
-        .modal-list {
-          list-style: none;
-          padding: 0;
-        }
-        .modal-list li {
-          font-size: 15px;
-          line-height: 1.8;
-          color: #666;
-          display: flex;
-          gap: 10px;
-        }
-        .modal-list li::before {
-          content: '—';
-          color: #ddd;
-          flex-shrink: 0;
-        }
-        .modal-stack {
-          font-family: 'IBM Plex Mono', monospace;
-          font-size: 12px;
-          color: #999;
-          letter-spacing: 0.02em;
-          padding-top: 24px;
-          margin-top: 40px;
-          border-top: 1px solid #eee;
-        }
-        .modal-handle {
-          display: none;
-          width: 36px;
-          height: 4px;
-          background: #ddd;
-          border-radius: 2px;
-          margin: 0 auto 16px;
-        }
-
-
         /* === FOOTER === */
         .footer {
           width: 100%;
@@ -1090,20 +762,6 @@ function App() {
           .contact-link:hover .contact-link-arrow { transform: none; color: #ccc; }
           .contact-link-phone { pointer-events: auto; cursor: pointer; }
           .contact-link-phone .contact-link-arrow { display: inline; }
-          .modal-backdrop { align-items: flex-end; }
-          .modal-card {
-            width: 100%;
-            max-height: 90vh;
-            border-radius: 24px 24px 0 0;
-            padding: 16px 24px 32px;
-            transform: translateY(100%);
-          }
-          .modal-handle { display: block; }
-          .modal-title { font-size: 22px; }
-          .modal-grid {
-            grid-template-columns: 1fr;
-            gap: 24px;
-          }
         }
 
         /* === MOBILE (iPhone 12 Pro: 390×844) === */
@@ -1155,7 +813,6 @@ function App() {
               {item}
             </a>
           ))}
-          <Link to="/agent" className="nav-link">Agent</Link>
         </nav>
         <button
           className={`hamburger ${menuOpen ? "open" : ""}`}
@@ -1184,7 +841,6 @@ function App() {
             {item}
           </a>
         ))}
-        <Link to="/agent" className="menu-overlay-link" onClick={() => setMenuOpen(false)}>Agent</Link>
       </div>
 
       {/* HERO — same full-width black block with centered name */}
@@ -1291,8 +947,8 @@ function App() {
             {projects.map((p, i) => (
               <div
                 key={p.id}
-                className={`project-row ${p.hasModal ? "clickable" : ""} fade-in s${i + 1} ${v("projects") ? "show" : ""}`}
-                onClick={() => p.hasModal && setActiveModal(p.id)}
+                className={`project-row ${p.link ? "clickable" : ""} fade-in s${i + 1} ${v("projects") ? "show" : ""}`}
+                onClick={() => p.link && navigate(p.link)}
               >
                 <div className="project-row-node" />
                 <div className="project-row-num">0{p.id}</div>
@@ -1371,72 +1027,6 @@ function App() {
       </footer>
       </div>
 
-      {/* SCOPE AI MODAL — interactive agent */}
-      <div className={`modal-backdrop ${activeModal === 1 ? "open" : ""}`} onClick={handleScopeClose}>
-        <div className="modal-card" onClick={(e) => e.stopPropagation()} onTouchStart={handleModalTouchStart} onTouchEnd={handleModalTouchEnd}>
-          <div className="modal-handle" />
-          <div className="modal-num">01</div>
-          <h2 className="modal-title">Scope AI</h2>
-          <div className="modal-year">Generate a Scope of Work</div>
-
-          {!scopeResult && !scopeLoading && (
-            <form className="scope-form" onSubmit={handleScopeSubmit}>
-              <div className="scope-field">
-                <label>Project Owner</label>
-                <input type="text" placeholder="e.g., City of Sacramento" value={scopeForm.project_owner} onChange={(e) => setScopeForm({ ...scopeForm, project_owner: e.target.value })} required />
-              </div>
-              <div className="scope-field">
-                <label>Project Objective</label>
-                <input type="text" placeholder="e.g., Design and construct a new pedestrian bridge" value={scopeForm.project_objective} onChange={(e) => setScopeForm({ ...scopeForm, project_objective: e.target.value })} required />
-              </div>
-              <div className="scope-field">
-                <label>Estimated Budget</label>
-                <input type="text" placeholder="e.g., $500,000" value={scopeForm.project_budget} onChange={(e) => setScopeForm({ ...scopeForm, project_budget: e.target.value })} required />
-              </div>
-              <div className="scope-field">
-                <label>Project Information</label>
-                <input type="text" placeholder="e.g., Roadway Design & Culvert Construction" value={scopeForm.project_info} onChange={(e) => setScopeForm({ ...scopeForm, project_info: e.target.value })} required />
-              </div>
-              <div className="scope-field">
-                <label>Technical Services Needed</label>
-                <input type="text" placeholder="e.g., Structural analysis, geotechnical investigation, surveying" value={scopeForm.technical_services} onChange={(e) => setScopeForm({ ...scopeForm, technical_services: e.target.value })} required />
-              </div>
-              <div className="scope-field">
-                <label>Estimated Completion</label>
-                <input type="text" placeholder="e.g., December 2027" value={scopeForm.completion_estimate} onChange={(e) => setScopeForm({ ...scopeForm, completion_estimate: e.target.value })} required />
-              </div>
-              <button type="submit" className="scope-submit">
-                Generate Scope of Work
-              </button>
-            </form>
-          )}
-
-          {scopeLoading && (
-            <div style={{ textAlign: "center", padding: "48px 0" }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 14, color: "#999", letterSpacing: "0.06em", marginBottom: 8 }}>Generating Scope of Work...</div>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: "#ccc" }}>This may take a few minutes</div>
-            </div>
-          )}
-
-          {scopeResult && (
-            <div>
-              <div className="scope-result" style={{ maxHeight: "40vh", overflowY: "auto", whiteSpace: "pre-wrap" }}>{scopeResult}</div>
-              <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-                <button className="scope-submit" onClick={handleScopePdf} disabled={scopePdfLoading}>
-                  {scopePdfLoading ? "Generating PDF..." : "Download PDF"}
-                </button>
-                <button className="scope-submit" style={{ background: "#fff", color: "#000" }} onClick={() => { setScopeResult(null); setScopeError(null); setScopeForm({ project_owner: "", project_objective: "", project_budget: "", project_info: "", technical_services: "", completion_estimate: "" }); }}>
-                  New Report
-                </button>
-              </div>
-            </div>
-          )}
-
-          {scopeError && <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, color: "#c00", padding: 16, border: "1px solid #fdd", background: "#fff5f5", marginTop: 16, borderRadius: 8 }}>{scopeError}</div>}
-
-          <div className="modal-stack">Python · React · OpenAI</div>
-        </div>
-      </div>
     </>
   );
 }
