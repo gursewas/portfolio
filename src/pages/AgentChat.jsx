@@ -383,7 +383,7 @@ export default function AgentChat() {
       <div className="agent-page">
         <header className="agent-header">
           <Link to="/" className="agent-back">Portfolio</Link>
-          <span className="agent-title">Scope of Work Agent</span>
+          <span className="agent-title">Scope AI</span>
         </header>
 
         {phase === "form" && (
