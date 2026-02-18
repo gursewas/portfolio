@@ -130,6 +130,12 @@ function App() {
       description: "Automates material takeoffs from construction plans. Parses blueprints to extract quantities for cost estimation and procurement.",
       stack: "Python · PyMuPDF · Pandas",
     },
+    {
+      id: 3,
+      title: "Cost Estimator",
+      description: "Generates detailed cost estimates for civil engineering projects by analyzing material quantities, labor rates, and equipment needs from project specifications.",
+      stack: "Python · Pandas",
+    },
   ];
 
   return (
