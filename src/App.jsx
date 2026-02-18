@@ -39,7 +39,18 @@ function App() {
 
   const experiences = [
     {
-      role: "Structural Engineer",
+      role: "Senior Project Engineer",
+      org: "JMA Civil",
+      period: "April 2024 — August 2025",
+      location: "Oakland, CA",
+      work: [
+        "Lead the design and management of rail transit and transportation infrastructure projects, including roadway crossings, utility systems, and related facilities worth over $100 million",
+        "Perform complex civil engineering analysis, encompassing grading, drainage, and hydraulic calculations, and utility design for water, sewer, gas, and communication systems",
+        "Coordinate multidisciplinary teams and stakeholders, managing subconsultants, interfacing with railroads and permitting agencies, and preparing technical reports and design documentation",
+      ],
+    },
+    {
+      role: "Civil Engineer",
       org: "City of Roseville",
       period: "July 2020 — April 2024",
       location: "Roseville, CA",
@@ -50,7 +61,7 @@ function App() {
       ],
     },
     {
-      role: "Researcher",
+      role: "Data Engineer Intern",
       org: "Institute of Transportation Studies at UC Davis",
       period: "April 2019 — June 2020",
       location: "Davis, CA",
@@ -71,7 +82,7 @@ function App() {
       ],
     },
     {
-      role: "Structural Engineer Intern",
+      role: "Transportation Engineer Intern",
       org: "Jacobs Engineering",
       period: "June 2018 — Sep. 2018",
       location: "Sacramento, CA",
