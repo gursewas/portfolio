@@ -1076,7 +1076,6 @@ function App() {
                 className={`project-row ${p.link ? "clickable" : ""} fade-in s${i + 1} ${v("projects") ? "show" : ""}`}
                 onClick={() => p.link && navigate(p.link)}
               >
-                <div className="project-row-node" />
                 <div className="project-row-num">0{p.id}</div>
                 <div className="project-row-title">{p.title}</div>
                 <div className="project-row-desc">{p.description}</div>
