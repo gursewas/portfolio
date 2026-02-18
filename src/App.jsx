@@ -37,7 +37,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => setActiveSlide((s) => (s + 1) % 3), 15000);
+    const timer = setInterval(() => setActiveSlide((s) => (s + 1) % 3), 10000);
     return () => clearInterval(timer);
   }, []);
 
