@@ -120,7 +120,7 @@ function App() {
     {
       id: 1,
       title: "Scope AI",
-      description: "An AI-powered web app that generates professional Civil Engineering Scope of Work documents as downloadable PDFs from project details using deep research.",
+      description: "An AI agent that generates professional Civil Engineering Scope of Work documents as downloadable PDFs from project details using deep research.",
       stack: "Python · React · OpenAI",
       link: "/agent",
     },
