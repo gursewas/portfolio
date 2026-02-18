@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://civil-agent-production.up.railway.app";
+const API_URL = "https://scope-of-work-api-production.up.railway.app";
 
 const QUESTIONS = [
   {
@@ -13,28 +11,34 @@ const QUESTIONS = [
     placeholder: "e.g., City of Sacramento",
   },
   {
-    key: "design_info",
+    key: "project_objective",
     label: "02",
-    question: "Design & engineering information?",
-    placeholder: "e.g., Roadway Design, Bridge Construction, Wastewater Systems",
+    question: "What is the project objective?",
+    placeholder: "e.g., Design and construct a new pedestrian bridge",
+  },
+  {
+    key: "project_budget",
+    label: "03",
+    question: "Estimated project budget?",
+    placeholder: "e.g., $500,000",
+  },
+  {
+    key: "project_info",
+    label: "04",
+    question: "Project information?",
+    placeholder: "e.g., Roadway Design & Culvert Construction",
   },
   {
     key: "technical_services",
-    label: "03",
+    label: "05",
     question: "What technical services are needed?",
     placeholder: "e.g., Structural analysis, geotechnical investigation, surveying",
   },
   {
     key: "completion_estimate",
-    label: "04",
+    label: "06",
     question: "Estimated project completion?",
     placeholder: "e.g., December 2027",
-  },
-  {
-    key: "project_objective",
-    label: "05",
-    question: "What is the project objective?",
-    placeholder: "e.g., Design and construct a new pedestrian bridge over the American River",
   },
 ];
 
@@ -42,10 +46,10 @@ export default function AgentChat() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [currentInput, setCurrentInput] = useState("");
-  const [phase, setPhase] = useState("form"); // form | loading | streaming | done
+  const [phase, setPhase] = useState("form"); // form | loading | done
   const [responseText, setResponseText] = useState("");
-  const [searches, setSearches] = useState([]);
   const [error, setError] = useState(null);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
   const responseRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -85,11 +89,10 @@ export default function AgentChat() {
   const submitResearch = async (data) => {
     setPhase("loading");
     setResponseText("");
-    setSearches([]);
     setError(null);
 
     try {
-      const res = await fetch(`${API_URL}/api/research`, {
+      const res = await fetch(`${API_URL}/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -97,50 +100,38 @@ export default function AgentChat() {
 
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      setPhase("streaming");
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (line.startsWith("event: ")) {
-            const eventType = line.slice(7).trim();
-            // Next line should be data
-            continue;
-          }
-          if (line.startsWith("data: ")) {
-            const raw = line.slice(6);
-            if (!raw || raw === "{}") continue;
-            try {
-              const parsed = JSON.parse(raw);
-              if (parsed.text) {
-                setResponseText((prev) => prev + parsed.text);
-              }
-              if (parsed.query) {
-                setSearches((prev) => [...prev, parsed.query]);
-              }
-              if (parsed.error) {
-                setError(parsed.error);
-              }
-            } catch {
-              // skip unparseable lines
-            }
-          }
-        }
-      }
+      const json = await res.json();
+      setResponseText(json.report || "No report generated.");
       setPhase("done");
     } catch (err) {
       setError(err.message);
       setPhase("done");
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    setDownloadingPdf(true);
+    try {
+      const res = await fetch(`${API_URL}/to-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          report: responseText,
+          project_owner: answers.project_owner || "scope_of_work",
+        }),
+      });
+      if (!res.ok) throw new Error(`PDF error: ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "scope_of_work.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDownloadingPdf(false);
     }
   };
 
@@ -150,7 +141,6 @@ export default function AgentChat() {
     setCurrentInput("");
     setPhase("form");
     setResponseText("");
-    setSearches([]);
     setError(null);
   };
 
@@ -218,7 +208,6 @@ export default function AgentChat() {
           width: 100%;
         }
 
-        /* Progress dots */
         .agent-progress {
           display: flex;
           gap: 10px;
@@ -239,7 +228,6 @@ export default function AgentChat() {
           transform: scale(1.4);
         }
 
-        /* Question */
         .agent-question-num {
           font-family: 'IBM Plex Mono', monospace;
           font-size: 11px;
@@ -315,34 +303,28 @@ export default function AgentChat() {
           color: #fff;
         }
 
-        /* Loading / streaming */
-        .agent-status {
+        .agent-loading {
           width: 100%;
-          text-align: center;
-        }
-        .agent-status-text {
-          font-family: 'IBM Plex Mono', monospace;
-          font-size: 13px;
-          color: #999;
-          letter-spacing: 0.06em;
-          margin-bottom: 24px;
-        }
-        .agent-searches {
+          flex: 1;
           display: flex;
           flex-direction: column;
-          gap: 6px;
-          margin-bottom: 32px;
+          align-items: center;
+          justify-content: center;
+          padding: 48px 24px;
         }
-        .agent-search-item {
+        .agent-loading-text {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 14px;
+          color: #999;
+          letter-spacing: 0.06em;
+          margin-bottom: 8px;
+        }
+        .agent-loading-sub {
           font-family: 'IBM Plex Mono', monospace;
           font-size: 12px;
-          color: #bbb;
-          padding: 6px 12px;
-          background: #fafafa;
-          border: 1px solid #f0f0f0;
+          color: #ccc;
         }
 
-        /* Response */
         .agent-response-wrap {
           width: 100%;
           max-width: 680px;
@@ -401,7 +383,7 @@ export default function AgentChat() {
       <div className="agent-page">
         <header className="agent-header">
           <Link to="/" className="agent-back">Portfolio</Link>
-          <span className="agent-title">Research Agent</span>
+          <span className="agent-title">Scope of Work Agent</span>
         </header>
 
         {phase === "form" && (
@@ -446,28 +428,21 @@ export default function AgentChat() {
                 onClick={handleNext}
                 disabled={!currentInput.trim()}
               >
-                {step < QUESTIONS.length - 1 ? "Next" : "Submit"}
+                {step < QUESTIONS.length - 1 ? "Next" : "Generate"}
               </button>
             </div>
           </div>
         )}
 
-        {(phase === "loading" || phase === "streaming" || phase === "done") && (
+        {phase === "loading" && (
+          <div className="agent-loading">
+            <div className="agent-loading-text">Generating Scope of Work...</div>
+            <div className="agent-loading-sub">This may take a few minutes</div>
+          </div>
+        )}
+
+        {phase === "done" && (
           <div className="agent-response-wrap">
-            {phase === "loading" && (
-              <div className="agent-status">
-                <div className="agent-status-text">Researching your project...</div>
-              </div>
-            )}
-
-            {searches.length > 0 && (
-              <div className="agent-searches">
-                {searches.map((q, i) => (
-                  <div key={i} className="agent-search-item">Searching: {q}</div>
-                ))}
-              </div>
-            )}
-
             {responseText && (
               <>
                 <div className="agent-response-label">Scope of Work</div>
@@ -479,11 +454,18 @@ export default function AgentChat() {
 
             {error && <div className="agent-error">{error}</div>}
 
-            {phase === "done" && (
-              <button className="agent-btn agent-reset" onClick={handleReset}>
-                New Research
+            <div className="agent-btn-row agent-reset">
+              <button
+                className="agent-btn"
+                onClick={handleDownloadPdf}
+                disabled={downloadingPdf || !responseText}
+              >
+                {downloadingPdf ? "Generating PDF..." : "Download PDF"}
               </button>
-            )}
+              <button className="agent-btn agent-btn-back" onClick={handleReset}>
+                New Report
+              </button>
+            </div>
           </div>
         )}
       </div>

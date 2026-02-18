@@ -8,6 +8,73 @@ function App() {
   const [scrollY, setScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
+  const SCOPE_API = "https://scope-of-work-api-production.up.railway.app";
+  const [scopeForm, setScopeForm] = useState({
+    project_owner: "", project_objective: "", project_budget: "",
+    project_info: "", technical_services: "", completion_estimate: "",
+  });
+  const [scopeLoading, setScopeLoading] = useState(false);
+  const [scopeResult, setScopeResult] = useState(null);
+  const [scopeError, setScopeError] = useState(null);
+  const [scopePdfLoading, setScopePdfLoading] = useState(false);
+
+  const handleScopeSubmit = async (e) => {
+    e.preventDefault();
+    setScopeLoading(true);
+    setScopeResult(null);
+    setScopeError(null);
+    try {
+      const res = await fetch(`${SCOPE_API}/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(scopeForm),
+      });
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      const json = await res.json();
+      setScopeResult(json.report || "No report generated.");
+    } catch (err) {
+      setScopeError(err.message);
+    } finally {
+      setScopeLoading(false);
+    }
+  };
+
+  const handleScopePdf = async () => {
+    setScopePdfLoading(true);
+    try {
+      const res = await fetch(`${SCOPE_API}/to-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          report: scopeResult,
+          project_owner: scopeForm.project_owner || "scope_of_work",
+        }),
+      });
+      if (!res.ok) throw new Error(`PDF error: ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "scope_of_work.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setScopeError(err.message);
+    } finally {
+      setScopePdfLoading(false);
+    }
+  };
+
+  const handleScopeClose = () => {
+    setActiveModal(null);
+    setScopeForm({
+      project_owner: "", project_objective: "", project_budget: "",
+      project_info: "", technical_services: "", completion_estimate: "",
+    });
+    setScopeLoading(false);
+    setScopeResult(null);
+    setScopeError(null);
+  };
 
   useEffect(() => {
     history.scrollRestoration = "manual";
@@ -149,24 +216,42 @@ function App() {
     },
   ];
 
+  // OLD PROJECT CARD DESIGN - kept for potential reuse
+  // const projects = [
+  //   {
+  //     id: 1,
+  //     title: "StructCalc",
+  //     description: "Open-source structural design automation tool. Beam, column, and footing design per ACI 318 and AISC standards.",
+  //     stack: "Python · Streamlit · NumPy",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "BridgeWatch",
+  //     description: "Real-time bridge health monitoring dashboard with sensor data visualization and anomaly detection.",
+  //     stack: "React · D3.js · Node.js",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "SitePlan AI",
+  //     description: "ML model generating preliminary grading plans from site survey data and satellite imagery.",
+  //     stack: "Python · TensorFlow · OpenCV",
+  //   },
+  // ];
+
   const projects = [
     {
       id: 1,
-      title: "StructCalc",
-      description: "Open-source structural design automation tool. Beam, column, and footing design per ACI 318 and AISC standards.",
-      stack: "Python · Streamlit · NumPy",
+      title: "Scope AI",
+      description: "An AI-powered web app that generates professional Civil Engineering Scope of Work documents as downloadable PDFs from project details using deep research.",
+      stack: "Python · React · OpenAI",
+      hasModal: true,
     },
     {
       id: 2,
-      title: "BridgeWatch",
-      description: "Real-time bridge health monitoring dashboard with sensor data visualization and anomaly detection.",
-      stack: "React · D3.js · Node.js",
-    },
-    {
-      id: 3,
-      title: "SitePlan AI",
-      description: "ML model generating preliminary grading plans from site survey data and satellite imagery.",
-      stack: "Python · TensorFlow · OpenCV",
+      title: "Quantities Extractor",
+      description: "Automates material takeoffs from construction plans. Parses blueprints to extract quantities for cost estimation and procurement.",
+      stack: "Python · PyMuPDF · Pandas",
+      hasModal: false,
     },
   ];
 
@@ -426,7 +511,6 @@ function App() {
         }
 
         /* === PROJECTS === */
-        /* Same structure: centered heading + 3-column grid of square cards */
         .projects-section {
           width: 100%;
           padding: 80px 24px;
@@ -436,6 +520,8 @@ function App() {
           max-width: 1100px;
           margin: 0 auto;
         }
+
+        /* OLD PROJECT CARD DESIGN - kept for potential reuse
         .project-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -492,6 +578,172 @@ function App() {
           transition: color 0.35s ease;
         }
         .project-card:hover .project-stack { color: rgba(255,255,255,0.35); }
+        END OLD PROJECT CARD DESIGN */
+
+        /* NEW: Horizontal row layout */
+        .project-rows {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .project-row {
+          display: grid;
+          grid-template-columns: 80px 1fr 1fr 200px;
+          align-items: center;
+          gap: 24px;
+          background: #fff;
+          border: 1px solid #e5e5e5;
+          border-radius: 20px;
+          padding: 36px 40px;
+          position: relative;
+          overflow: hidden;
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                      box-shadow 0.35s ease,
+                      border-color 0.35s ease,
+                      background 0.35s ease,
+                      color 0.35s ease;
+        }
+        .project-row.clickable { cursor: pointer; }
+        .project-row:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+          background: #000;
+          color: #fff;
+          border-color: #000;
+        }
+        .project-row-num {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 13px;
+          color: #ccc;
+          letter-spacing: 0.06em;
+          font-weight: 500;
+          transition: color 0.35s ease;
+        }
+        .project-row:hover .project-row-num { color: rgba(255,255,255,0.3); }
+        .project-row-title {
+          font-size: 20px;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+        }
+        .project-row-desc {
+          font-size: 14px;
+          line-height: 1.7;
+          color: #888;
+          transition: color 0.35s ease;
+        }
+        .project-row:hover .project-row-desc { color: rgba(255,255,255,0.5); }
+        .project-row-stack {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 12px;
+          color: #bbb;
+          letter-spacing: 0.02em;
+          text-align: right;
+          transition: color 0.35s ease;
+        }
+        .project-row:hover .project-row-stack { color: rgba(255,255,255,0.35); }
+        /* Node dot — top right corner */
+        .project-row-node {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #e5e5e5;
+          transition: background 0.35s ease;
+        }
+        .project-row:hover .project-row-node { background: rgba(255,255,255,0.25); }
+
+        @media (max-width: 768px) {
+          .project-row {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 28px 24px;
+          }
+          .project-row-stack { text-align: left; }
+        }
+
+        /* === SCOPE AI MODAL FORM === */
+        .scope-form {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          margin-top: 32px;
+        }
+        .scope-field label {
+          display: block;
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #999;
+          margin-bottom: 8px;
+        }
+        .scope-field input,
+        .scope-field select,
+        .scope-field textarea {
+          width: 100%;
+          font-size: 15px;
+          font-family: inherit;
+          padding: 14px 16px;
+          border: 1px solid #e5e5e5;
+          border-radius: 12px;
+          background: #fafafa;
+          outline: none;
+          transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .scope-field input:focus,
+        .scope-field select:focus,
+        .scope-field textarea:focus {
+          border-color: #000;
+          background: #fff;
+        }
+        .scope-field textarea {
+          min-height: 100px;
+          resize: vertical;
+        }
+        .scope-field select {
+          cursor: pointer;
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.5'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 16px center;
+          padding-right: 40px;
+        }
+        .scope-submit {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 13px;
+          font-weight: 500;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          padding: 16px 32px;
+          border: 2px solid #000;
+          background: #000;
+          color: #fff;
+          cursor: pointer;
+          border-radius: 12px;
+          margin-top: 8px;
+          transition: background 0.2s ease, color 0.2s ease;
+        }
+        .scope-submit:hover { background: #fff; color: #000; }
+        .scope-submit:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+        .scope-submit:disabled:hover {
+          background: #000;
+          color: #fff;
+        }
+        .scope-result {
+          margin-top: 24px;
+          padding: 24px;
+          background: #fafafa;
+          border-radius: 12px;
+          border: 1px solid #e5e5e5;
+          font-size: 15px;
+          line-height: 1.8;
+          color: #666;
+        }
 
         /* === ABOUT === */
         /* Same structure: full-width black section, image left, text right */
@@ -870,15 +1122,11 @@ function App() {
           .exp-body.open { max-height: 600px; }
           .exp-detail { font-size: 14px; line-height: 1.7; }
 
-          /* PROJECTS — drop the square aspect ratio, tighten padding */
+          /* PROJECTS — tighten padding on mobile */
           .projects-section { padding: 56px 16px; }
-          .project-card {
-            aspect-ratio: auto;
-            padding: 24px;
-            border-radius: 16px;
-          }
-          .project-title { font-size: 18px; }
-          .project-desc { font-size: 13px; }
+          .project-row { padding: 24px 20px; border-radius: 16px; }
+          .project-row-title { font-size: 18px; }
+          .project-row-desc { font-size: 13px; }
 
           /* ABOUT — tighten inner padding */
           .about-section { padding: 56px 0; }
@@ -1007,7 +1255,29 @@ function App() {
         </div>
       </section>
 
-      {/* PROJECTS — same centered heading + grid of square cards */}
+      {/* OLD PROJECT CARD DESIGN - kept for potential reuse
+      <section id="projects" className="projects-section" data-section>
+        <div className="projects-inner">
+          <h2 className={`section-heading fade-in ${v("projects") ? "show" : ""}`}>Projects</h2>
+          <div className="project-grid">
+            {projects.map((p, i) => (
+              <div key={p.id} className={`project-card fade-in s${i + 1} ${v("projects") ? "show" : ""}`} onClick={() => setActiveModal(p.id)}>
+                <div className="project-card-top">
+                  <div className="project-num">0{p.id}</div>
+                  <h3 className="project-title">{p.title}</h3>
+                  <p className="project-desc">{p.description}</p>
+                </div>
+                <div className="project-card-bottom">
+                  <div className="project-stack">{p.stack}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      */}
+
+      {/* PROJECTS — horizontal row layout */}
       <section
         id="projects"
         className="projects-section"
@@ -1017,21 +1287,18 @@ function App() {
           <h2 className={`section-heading fade-in ${v("projects") ? "show" : ""}`}>
             Projects
           </h2>
-          <div className="project-grid">
+          <div className="project-rows">
             {projects.map((p, i) => (
               <div
                 key={p.id}
-                className={`project-card fade-in s${i + 1} ${v("projects") ? "show" : ""}`}
-                onClick={() => setActiveModal(p.id)}
+                className={`project-row ${p.hasModal ? "clickable" : ""} fade-in s${i + 1} ${v("projects") ? "show" : ""}`}
+                onClick={() => p.hasModal && setActiveModal(p.id)}
               >
-                <div className="project-card-top">
-                  <div className="project-num">0{p.id}</div>
-                  <h3 className="project-title">{p.title}</h3>
-                  <p className="project-desc">{p.description}</p>
-                </div>
-                <div className="project-card-bottom">
-                  <div className="project-stack">{p.stack}</div>
-                </div>
+                <div className="project-row-node" />
+                <div className="project-row-num">0{p.id}</div>
+                <div className="project-row-title">{p.title}</div>
+                <div className="project-row-desc">{p.description}</div>
+                <div className="project-row-stack">{p.stack}</div>
               </div>
             ))}
           </div>
@@ -1104,90 +1371,70 @@ function App() {
       </footer>
       </div>
 
-      {/* PROJECT MODAL — StructCalc */}
-      <div className={`modal-backdrop ${activeModal === 1 ? "open" : ""}`} onClick={() => setActiveModal(null)}>
+      {/* SCOPE AI MODAL — interactive agent */}
+      <div className={`modal-backdrop ${activeModal === 1 ? "open" : ""}`} onClick={handleScopeClose}>
         <div className="modal-card" onClick={(e) => e.stopPropagation()} onTouchStart={handleModalTouchStart} onTouchEnd={handleModalTouchEnd}>
           <div className="modal-handle" />
           <div className="modal-num">01</div>
-          <h2 className="modal-title">StructCalc</h2>
-          <div className="modal-year">2023</div>
-          <div className="modal-grid">
-            <div>
-              <div className="modal-label">Problem</div>
-              <p className="modal-text">Engineers spend 30-40% of their time on repetitive hand calculations that follow the same code provisions every time.</p>
-              <div className="modal-label">Solution</div>
-              <p className="modal-text">A Python-based tool with a Streamlit interface that lets engineers input parameters and instantly get code-compliant designs with full calculation reports.</p>
-            </div>
-            <div>
-              <div className="modal-label">Features</div>
-              <ul className="modal-list">
-                <li>ACI 318 concrete design</li>
-                <li>AISC steel member checks</li>
-                <li>Spread footing sizing</li>
-                <li>PDF report generation</li>
-                <li>Unit conversion built-in</li>
-              </ul>
-            </div>
-          </div>
-          <div className="modal-stack">Python · Streamlit · NumPy · ReportLab</div>
-        </div>
-      </div>
+          <h2 className="modal-title">Scope AI</h2>
+          <div className="modal-year">Generate a Scope of Work</div>
 
-      {/* PROJECT MODAL — BridgeWatch */}
-      <div className={`modal-backdrop ${activeModal === 2 ? "open" : ""}`} onClick={() => setActiveModal(null)}>
-        <div className="modal-card" onClick={(e) => e.stopPropagation()} onTouchStart={handleModalTouchStart} onTouchEnd={handleModalTouchEnd}>
-          <div className="modal-handle" />
-          <div className="modal-num">02</div>
-          <h2 className="modal-title">BridgeWatch</h2>
-          <div className="modal-year">2023</div>
-          <div className="modal-grid">
-            <div>
-              <div className="modal-label">Problem</div>
-              <p className="modal-text">Bridge inspections happen on fixed schedules regardless of actual structural conditions, meaning potential issues can go undetected between inspection cycles.</p>
-              <div className="modal-label">Solution</div>
-              <p className="modal-text">A real-time dashboard that ingests sensor data from accelerometers and strain gauges installed on bridge structures, visualizes structural response patterns, and flags anomalies before they become critical.</p>
-            </div>
-            <div>
-              <div className="modal-label">Features</div>
-              <ul className="modal-list">
-                <li>Real-time sensor data ingestion</li>
-                <li>Structural response visualization</li>
-                <li>Anomaly detection alerts</li>
-                <li>Historical trend analysis</li>
-                <li>Multi-bridge monitoring</li>
-              </ul>
-            </div>
-          </div>
-          <div className="modal-stack">React · D3.js · Node.js · PostgreSQL</div>
-        </div>
-      </div>
+          {!scopeResult && !scopeLoading && (
+            <form className="scope-form" onSubmit={handleScopeSubmit}>
+              <div className="scope-field">
+                <label>Project Owner</label>
+                <input type="text" placeholder="e.g., City of Sacramento" value={scopeForm.project_owner} onChange={(e) => setScopeForm({ ...scopeForm, project_owner: e.target.value })} required />
+              </div>
+              <div className="scope-field">
+                <label>Project Objective</label>
+                <input type="text" placeholder="e.g., Design and construct a new pedestrian bridge" value={scopeForm.project_objective} onChange={(e) => setScopeForm({ ...scopeForm, project_objective: e.target.value })} required />
+              </div>
+              <div className="scope-field">
+                <label>Estimated Budget</label>
+                <input type="text" placeholder="e.g., $500,000" value={scopeForm.project_budget} onChange={(e) => setScopeForm({ ...scopeForm, project_budget: e.target.value })} required />
+              </div>
+              <div className="scope-field">
+                <label>Project Information</label>
+                <input type="text" placeholder="e.g., Roadway Design & Culvert Construction" value={scopeForm.project_info} onChange={(e) => setScopeForm({ ...scopeForm, project_info: e.target.value })} required />
+              </div>
+              <div className="scope-field">
+                <label>Technical Services Needed</label>
+                <input type="text" placeholder="e.g., Structural analysis, geotechnical investigation, surveying" value={scopeForm.technical_services} onChange={(e) => setScopeForm({ ...scopeForm, technical_services: e.target.value })} required />
+              </div>
+              <div className="scope-field">
+                <label>Estimated Completion</label>
+                <input type="text" placeholder="e.g., December 2027" value={scopeForm.completion_estimate} onChange={(e) => setScopeForm({ ...scopeForm, completion_estimate: e.target.value })} required />
+              </div>
+              <button type="submit" className="scope-submit">
+                Generate Scope of Work
+              </button>
+            </form>
+          )}
 
-      {/* PROJECT MODAL — SitePlan AI */}
-      <div className={`modal-backdrop ${activeModal === 3 ? "open" : ""}`} onClick={() => setActiveModal(null)}>
-        <div className="modal-card" onClick={(e) => e.stopPropagation()} onTouchStart={handleModalTouchStart} onTouchEnd={handleModalTouchEnd}>
-          <div className="modal-handle" />
-          <div className="modal-num">03</div>
-          <h2 className="modal-title">SitePlan AI</h2>
-          <div className="modal-year">2024</div>
-          <div className="modal-grid">
-            <div>
-              <div className="modal-label">Problem</div>
-              <p className="modal-text">Creating preliminary grading plans from raw survey data is a time-intensive manual process that delays project timelines and relies heavily on individual engineer experience.</p>
-              <div className="modal-label">Solution</div>
-              <p className="modal-text">A machine learning model that analyzes site survey data and satellite imagery to automatically generate preliminary grading plans, giving engineers a strong starting point to refine.</p>
+          {scopeLoading && (
+            <div style={{ textAlign: "center", padding: "48px 0" }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 14, color: "#999", letterSpacing: "0.06em", marginBottom: 8 }}>Generating Scope of Work...</div>
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: "#ccc" }}>This may take a few minutes</div>
             </div>
+          )}
+
+          {scopeResult && (
             <div>
-              <div className="modal-label">Features</div>
-              <ul className="modal-list">
-                <li>Survey data parsing and analysis</li>
-                <li>Satellite imagery processing</li>
-                <li>Automated grading plan generation</li>
-                <li>Elevation contour mapping</li>
-                <li>Export to AutoCAD format</li>
-              </ul>
+              <div className="scope-result" style={{ maxHeight: "40vh", overflowY: "auto", whiteSpace: "pre-wrap" }}>{scopeResult}</div>
+              <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+                <button className="scope-submit" onClick={handleScopePdf} disabled={scopePdfLoading}>
+                  {scopePdfLoading ? "Generating PDF..." : "Download PDF"}
+                </button>
+                <button className="scope-submit" style={{ background: "#fff", color: "#000" }} onClick={() => { setScopeResult(null); setScopeError(null); setScopeForm({ project_owner: "", project_objective: "", project_budget: "", project_info: "", technical_services: "", completion_estimate: "" }); }}>
+                  New Report
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="modal-stack">Python · TensorFlow · OpenCV · Flask</div>
+          )}
+
+          {scopeError && <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, color: "#c00", padding: 16, border: "1px solid #fdd", background: "#fff5f5", marginTop: 16, borderRadius: 8 }}>{scopeError}</div>}
+
+          <div className="modal-stack">Python · React · OpenAI</div>
         </div>
       </div>
     </>
