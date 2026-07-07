@@ -45,8 +45,9 @@ function App() {
 
   const experiences = [
     {
-      role: "Head of Finance",
+      role: "Finance Lead",
       org: "Marble",
+      url: "https://withmarble.ai",
       period: "August 2025 — Present",
       location: "San Francisco, CA",
       work: [
@@ -352,6 +353,12 @@ function App() {
           font-family: 'IBM Plex Mono', monospace;
           font-size: 13px; color: #999;
         }
+        .exp-org-link {
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          transition: color 0.2s ease;
+        }
+        .exp-org-link:hover { color: #000; }
         .exp-period-text {
           font-family: 'IBM Plex Mono', monospace;
           font-size: 12px; color: #999;
@@ -1028,7 +1035,19 @@ function App() {
                 <div className="exp-top">
                   <div className="exp-top-left">
                     <span className="exp-role-title">{e.role}</span>
-                    <span className="exp-org-name">{e.org}</span>
+                    {e.url ? (
+                      <a
+                        className="exp-org-name exp-org-link"
+                        href={e.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(ev) => ev.stopPropagation()}
+                      >
+                        {e.org}
+                      </a>
+                    ) : (
+                      <span className="exp-org-name">{e.org}</span>
+                    )}
                     <span className="exp-period-text">{e.period}</span>
                   </div>
                   <span className={`exp-plus ${activeExp === i ? "open" : ""}`}>+</span>
