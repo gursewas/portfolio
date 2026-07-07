@@ -45,6 +45,16 @@ function App() {
 
   const experiences = [
     {
+      role: "Head of Finance",
+      org: "Marble",
+      period: "August 2025 — Present",
+      location: "San Francisco, CA",
+      work: [
+        "Own the financial strategy for an AI tutoring startup, building budgeting, forecasting, and cash-flow models to guide runway management and fundraising decisions",
+        "Partner with leadership on unit economics and pricing, and establish the accounting, reporting, and internal controls needed to scale the AI product",
+      ],
+    },
+    {
       role: "Senior Project Engineer",
       org: "JMA Civil",
       period: "April 2024 — August 2025",
