@@ -1107,12 +1107,12 @@ function App() {
               <div
                 key={p.id}
                 className={`project-row ${p.link ? "clickable" : ""} fade-in s${i + 1} ${v("projects") ? "show" : ""}`}
-                onClick={() =>
-                  p.link &&
-                  (p.external
-                    ? window.open(p.link, "_blank", "noopener,noreferrer")
-                    : navigate(p.link))
-                }
+                onClick={() => {
+                  if (!p.link) return;
+                  // Full page load: the proxied path is not a react-router route.
+                  if (p.external) window.location.href = p.link;
+                  else navigate(p.link);
+                }}
               >
                 <div className="project-row-num">0{p.id}</div>
                 <div className="project-row-title">{p.title}</div>
@@ -1253,7 +1253,7 @@ function App() {
           <div className={`contact-links fade-in s2 ${v("contact") ? "show" : ""}`}>
             {[
               { label: "Email", value: "gursewakgssaini@gmail.com", href: "mailto:gursewakgssaini@gmail.com" },
-              { label: "LinkedIn", value: "linkedin.com/in/gursewak-singh-", href: "https://www.linkedin.com/in/gursewak-singh-/" },
+              // { label: "LinkedIn", value: "linkedin.com/in/gursewak-singh-", href: "https://www.linkedin.com/in/gursewak-singh-/" },
               { label: "GitHub", value: "github.com/gursewas", href: "https://github.com/gursewas" },
               { label: "Phone", value: "(916) 837-6535", href: "tel:+19168376535" },
             ].map((c, i) => (

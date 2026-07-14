@@ -5,8 +5,8 @@
       "destination": "https://quantity-extractor-production.up.railway.app"
     },
     {
-      "source": "/quantity-extractor/:path*",
-      "destination": "https://quantity-extractor-production.up.railway.app/:path*"
+      "source": "/quantity-extractor/(.*)",
+      "destination": "https://quantity-extractor-production.up.railway.app/$1"
     },
     { "source": "/(.*)", "destination": "/" }
   ]
