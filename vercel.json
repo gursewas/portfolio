@@ -1,5 +1,13 @@
 {
   "rewrites": [
+    {
+      "source": "/quantity-extractor",
+      "destination": "https://quantity-extractor-production.up.railway.app"
+    },
+    {
+      "source": "/quantity-extractor/:path*",
+      "destination": "https://quantity-extractor-production.up.railway.app/:path*"
+    },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
