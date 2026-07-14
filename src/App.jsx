@@ -143,9 +143,10 @@ function App() {
     },
     {
       id: 2,
-      title: "Quantities Extractor",
-      description: "Automates material takeoffs from construction plans. Parses blueprints to extract quantities for cost estimation and procurement.",
-      stack: "Python · PyMuPDF · Pandas",
+      title: "Quantity Extractor",
+      description: "AI-powered quantity takeoff from civil engineering plan sets, delivered as a PDF report for engineer verification",
+      stack: "Python · FastAPI · Claude API",
+      link: "https://quantity-extractor-production.up.railway.app",
     },
     {
       id: 3,
@@ -1103,7 +1104,12 @@ function App() {
               <div
                 key={p.id}
                 className={`project-row ${p.link ? "clickable" : ""} fade-in s${i + 1} ${v("projects") ? "show" : ""}`}
-                onClick={() => p.link && navigate(p.link)}
+                onClick={() =>
+                  p.link &&
+                  (p.link.startsWith("http")
+                    ? window.open(p.link, "_blank", "noopener,noreferrer")
+                    : navigate(p.link))
+                }
               >
                 <div className="project-row-num">0{p.id}</div>
                 <div className="project-row-title">{p.title}</div>
