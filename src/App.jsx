@@ -146,7 +146,10 @@ function App() {
       title: "Quantity Extractor",
       description: "AI-powered quantity takeoff from civil engineering plan sets, delivered as a PDF report for engineer verification",
       stack: "Python · FastAPI · Claude API",
-      link: "https://quantity-extractor-production.up.railway.app",
+      link: "/quantity-extractor",
+      // Proxied to the Railway app by a vercel.json rewrite, so it must be a
+      // full page load — react-router would try to resolve it as an app route.
+      external: true,
     },
     {
       id: 3,
@@ -1106,7 +1109,7 @@ function App() {
                 className={`project-row ${p.link ? "clickable" : ""} fade-in s${i + 1} ${v("projects") ? "show" : ""}`}
                 onClick={() =>
                   p.link &&
-                  (p.link.startsWith("http")
+                  (p.external
                     ? window.open(p.link, "_blank", "noopener,noreferrer")
                     : navigate(p.link))
                 }
