@@ -1253,7 +1253,7 @@ function App() {
           <div className={`contact-links fade-in s2 ${v("contact") ? "show" : ""}`}>
             {[
               { label: "Email", value: "gursewakgssaini@gmail.com", href: "mailto:gursewakgssaini@gmail.com" },
-              { label: "LinkedIn", value: "linkedin.com/in/gursewak-singh-", href: "https://www.linkedin.com/in/gursewak-singh-/" },
+              // { label: "LinkedIn", value: "linkedin.com/in/gursewak-singh-", href: "https://www.linkedin.com/in/gursewak-singh-/" },
               { label: "GitHub", value: "github.com/gursewas", href: "https://github.com/gursewas" },
               { label: "Phone", value: "(916) 837-6535", href: "tel:+19168376535" },
             ].map((c, i) => (
