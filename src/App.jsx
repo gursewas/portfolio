@@ -1107,12 +1107,12 @@ function App() {
               <div
                 key={p.id}
                 className={`project-row ${p.link ? "clickable" : ""} fade-in s${i + 1} ${v("projects") ? "show" : ""}`}
-                onClick={() =>
-                  p.link &&
-                  (p.external
-                    ? window.open(p.link, "_blank", "noopener,noreferrer")
-                    : navigate(p.link))
-                }
+                onClick={() => {
+                  if (!p.link) return;
+                  // Full page load: the proxied path is not a react-router route.
+                  if (p.external) window.location.href = p.link;
+                  else navigate(p.link);
+                }}
               >
                 <div className="project-row-num">0{p.id}</div>
                 <div className="project-row-title">{p.title}</div>
