@@ -153,9 +153,13 @@ function App() {
     },
     {
       id: 3,
-      title: "Cost Estimator",
-      description: "Generates detailed cost estimates for civil engineering projects by analyzing material quantities, labor rates, and equipment needs from project specifications.",
-      stack: "Python · Pandas",
+      title: "Plan Summarizer",
+      description: "Upload civil engineering plans and receive an AI-generated professional summary as a downloadable PDF.",
+      stack: "Python · FastAPI · Claude API",
+      link: "/plan-summarizer",
+      // Proxied to the Railway app by a vercel.json rewrite, so it must be a
+      // full page load — react-router would try to resolve it as an app route.
+      external: true,
     },
   ];
 
