@@ -151,7 +151,8 @@ export default function AgentChat() {
 
         .agent-page {
           min-height: 100vh;
-          background: #fff;
+          /* Matches the Quantity Extractor / Plan Summarizer page background. */
+          background: #fafafa;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
           -webkit-font-smoothing: antialiased;
           display: flex;
