@@ -154,7 +154,7 @@ function App() {
     {
       id: 3,
       title: "Plan Summarizer",
-      description: "Upload civil engineering plans and receive an AI-generated professional summary as a downloadable PDF.",
+      description: "AI-generated summaries of civil engineering plan sets, delivered as a downloadable PDF for quick project review.",
       stack: "Python · FastAPI · Claude API",
       link: "/plan-summarizer",
       // Proxied to the Railway app by a vercel.json rewrite, so it must be a
