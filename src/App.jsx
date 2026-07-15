@@ -502,7 +502,11 @@ function App() {
         }
         .project-row {
           display: grid;
-          grid-template-columns: 80px 1fr 1fr 200px;
+          /* Stack column is a fixed track, not max-content: every row is its own
+             grid, so an intrinsic width would size per-card and misalign the
+             columns between cards. 240px clears the widest stack string
+             (~216px at 12px IBM Plex Mono) so it never wraps. */
+          grid-template-columns: 80px 1fr 1fr 240px;
           align-items: center;
           gap: 24px;
           background: #fff;
@@ -552,6 +556,7 @@ function App() {
           color: #bbb;
           letter-spacing: 0.02em;
           text-align: right;
+          white-space: nowrap;
           transition: color 0.35s ease;
         }
         .project-row:hover .project-row-stack { color: rgba(255,255,255,0.35); }
@@ -574,7 +579,11 @@ function App() {
             gap: 12px;
             padding: 28px 24px;
           }
-          .project-row-stack { text-align: left; }
+          /* Single column here, so the stack has only the card's width to work
+             with — release nowrap rather than let it run off-screen. It breaks
+             at the separators only; the non-breaking space in "Claude API"
+             keeps that name intact. */
+          .project-row-stack { text-align: left; white-space: normal; }
         }
 
         /* === ABOUT === */
